@@ -8,13 +8,12 @@ This repository is the example submission for the Global Virtual Hackathon 2026.
 
 `links.js` holds the two addresses both pages link to, the repository and the live site.
 
-## Running it on your own computer
+## Live project
 
-```bash
-python3 -m http.server 8642
-```
+See the example submission page here: <https://cishackathon.github.io/exemplar/>
 
-Then open <http://localhost:8642/> for the portal page, or <http://localhost:8642/submission/> for the project.
+See the project here: <https://cishackathon.github.io/exemplar/submission/>
+
 
 ## Licence
 
