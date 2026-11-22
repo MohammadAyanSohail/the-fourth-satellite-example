@@ -4,7 +4,7 @@ An interactive explainer of how GPS works, in five steps (timing, circles, clock
 
 ## Layout
 
-- `submission/` is the whole site. It is static HTML, CSS and ES modules with no build step and no dependencies. Open `submission/index.html` through any local static server.
+- `submission/` is the whole site. It is static HTML, CSS and ES modules with no build step and no dependencies. Serve the repo root with any local static server (the page loads `../links.js`) and open `/submission/`.
   - `index.html` and `css/style.css`: page and styles (dark/light theme).
   - `js/app.js`: entry point. `step1-timing.js` through `step5-city.js`: one module per step.
   - `js/receiver.js`: Gauss–Newton solver `fix()` and `spread()` (dilution of precision).
@@ -16,5 +16,5 @@ An interactive explainer of how GPS works, in five steps (timing, circles, clock
 
 - Everything shown (distances, rings, dots, captions) is computed live. The receiver never sees the user's true position. Anything exaggerated or simplified must say so on screen.
 - Keep text short: no more than three sentences in any block.
-- Colour roles: blue is you, violet is satellites and signals, acid lime marks draggable or "going wrong" things.
+- Colour roles: blue is you, violet is satellites and signals, acid lime marks draggable or "going wrong" things, and is also the page's highlight colour (call-to-action button, "Try" badges, eyebrow, footnotes, bold live-caption words, focus outline). One exception: step 5 draws straight signals in blue so they stand out from bounced (lime) and blocked (muted) ones.
 - Keep the existing coding style and the plain no-build setup.

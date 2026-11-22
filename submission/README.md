@@ -1,4 +1,4 @@
-# Nobody up there knows where you are
+# The Fourth Satellite
 
 Most people think a satellite tells their phone where they are. It doesn't. No satellite knows you exist. The satellites only repeat who they are, where they are and what time it is. Your phone times how late each message arrives and works out the blue dot by itself. The site explains how in five short steps. Each step has one idea, one thing to play with, and one everyday analogy.
 
@@ -10,7 +10,7 @@ Most people think a satellite tells their phone where they are. It doesn't. No s
 | 2. Circles | One distance is a ring; three rings meet in one spot | Switch satellites on one at a time, drag yourself around | A friend texting "I'm 5 km from the station" |
 | 3. Clock | The phone's clock is wrong, so every ring is too big by the same amount, and finding that amount takes one more satellite | Shrink every ring by the same amount yourself until they meet, with a 12× magnifier on the crossings. Turn off one satellite and every amount works, drawn as a trail of possible answers. A card counts the unknowns: 3 in the flat picture, 4 in the real world | A watch that's 5 minutes fast |
 | 4. Wobble | Where the satellites sit decides the size of the pale circle | Spread the satellites out or bunch them together, or drag them, and watch the cloud of answers | Two torch beams crossing |
-| 5. City | Buildings block and bounce signals, so the dot wanders | Change building height and where you stand, pause the sky, and turn on a 3D city map | A shout bouncing off a wall |
+| 5. City | Buildings block and bounce signals, so the dot wanders | Change building height and where you stand, pause the sky, and turn on a 3D city map | A friend calling your name across a busy street |
 
 After the steps there is a five-line recap, three surprising facts, and a collapsed "What we simplified, and sources" box.
 
@@ -60,15 +60,15 @@ Decoration: the orbiting satellites and the breathing dot at the top of the page
 
 ### You never see how the phone measures the time
 
-Every step rests on "the signal took 69.6 ms", and that's the hard part. A GPS signal arrives weaker than the noise around it. The phone finds it by sliding a copy of the satellite's known pattern of 1,023 on-off chips against what the antenna picks up until they line up. Our times come from the true distance plus noise. A winning entry would let the visitor slide the pattern themselves and watch the match rise out of the noise.
+Every step rests on "the signal took 69.6 ms", and that's the hard part. A GPS signal arrives weaker than the noise around it. The phone finds it by sliding a copy of the satellite's known pattern of 1,023 on-off chips against what the antenna picks up until they line up. Our times come from the true distance plus noise. A better version would let the visitor slide the pattern themselves and watch the match rise out of the noise.
 
 ### There are no tests
 
-`fix()` is careful only to use positions and times, but nothing enforces that. A winning entry would test the receiver against known answers: the exact position when there's no noise, the clock error recovered to the nanosecond, a refusal when there are too few satellites, and the same answer from different first guesses.
+`fix()` is careful only to use positions and times, but nothing enforces that. A better version would test the receiver against known answers: the exact position when there's no noise, the clock error recovered to the nanosecond, a refusal when there are too few satellites, and the same answer from different first guesses.
 
 ### The fourth satellite is only counted, not shown
 
-Step 3 shows, in the flat picture, why the clock takes one extra satellite, and counts the unknowns for the real world (east–west, north–south, height and clock). But you never see the fourth satellite at work, because the picture is flat. A winning entry would add a small 3D view at the end.
+Step 3 shows, in the flat picture, why the clock takes one extra satellite, and counts the unknowns for the real world (east–west, north–south, height and clock). But you never see the fourth satellite at work, because the picture is flat. A better version would add a small 3D view at the end.
 
 ### Smaller problems
 
@@ -82,7 +82,7 @@ Step 3 shows, in the flat picture, why the clock takes one extra satellite, and 
 | The HTML canvas, built into browsers | All the interactive pictures | It draws anything we can describe in code, with nothing to install. |
 | Space Grotesk, Inter and JetBrains Mono, from Google Fonts | The type | A slightly spacey display face, a plain one for reading, and a monospace face for the numbers. |
 
-Everything else, including the receiver, the orbits, the street and the theme switch, is our own code.
+Everything else, including the receiver, the orbits, the street and the theme switch, is plain JavaScript: it came from the organisers' exemplar, and we have built on it since.
 
 ## Sources for the facts on the page
 
@@ -105,7 +105,7 @@ Then open <http://localhost:8642/submission/>. Browsers won't load JavaScript mo
 
 ## The code
 
-There are about 770 lines of JavaScript, with no libraries. Each step has its own file, so you can explain one step without reading the others.
+There are about 830 lines of JavaScript, with no libraries. Each step has its own file, so you can explain one step without reading the others.
 
 | File | What's in it |
 |---|---|

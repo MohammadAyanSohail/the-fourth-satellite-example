@@ -47,7 +47,7 @@ export function init(root) {
     g.globalAlpha = 1;
 
     const now1 = fix(measure(reading * 104729 + 11), { start });
-    const cov = spread(measure(0), you, true, WOBBLE);
+    const cov = now1.ok ? spread(measure(0), now1.pos, true, WOBBLE) : null;   // worked out where the phone thinks it is
     const size = cov ? Math.sqrt(cov[0][0] + cov[1][1]) : Infinity;   // the radius phones draw
 
     sats.forEach((s, i) => { const [x, y] = v.px(s); satellite(g, x, y, NAMES[i]); grabRing(g, x, y, 18); });

@@ -1,5 +1,5 @@
-// The two addresses the pages link to. Change both after publishing.
+// The project's addresses. The pages link to `repo`; `live` is the published site. Change both after publishing.
 const LINKS = {
-  repo: 'https://www.github.com/MohammadAyanSohail/the-fourth-satellite-example/',
+  repo: 'https://github.com/MohammadAyanSohail/the-fourth-satellite-example/',
   live: 'https://mohammadayansohail.github.io/the-fourth-satellite-example/submission/',
 };

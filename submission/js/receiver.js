@@ -4,7 +4,7 @@
 import { C, sub, len, solve, inverse } from './geo.js';
 
 export const RANGE_NOISE = 1.5;  // metres; how far one measured distance is typically off
-export const START = [0, 0];   // the first guess: the centre of the Earth
+export const START = [0, 0];   // the first guess when the caller gives none: the origin of whatever map it uses
 
 // One satellite's line in the sums. h says how the predicted distance changes
 // if the guess moves a metre in x, a metre in y, or the clock guess grows by a metre.

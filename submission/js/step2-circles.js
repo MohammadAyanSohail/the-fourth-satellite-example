@@ -1,8 +1,9 @@
 // Step 2: one distance gives a circle, two give two points, three give one.
-import { dist, circleMeet } from './geo.js';
+import { C, dist, circleMeet } from './geo.js';
+import { fix } from './receiver.js';
 import { fitCanvas, ring, label, satellite, blueDot, person, grabRing, draggable, loop } from './draw.js';
 import { palette as P } from './theme.js';
-import { spaceView, START_SATS, NAMES, keepIn } from './space.js';
+import { spaceView, START_SATS, NAMES, middleOf, keepIn } from './space.js';
 import { fmtKm } from './ui.js';
 
 export function init(root) {
@@ -45,7 +46,11 @@ export function init(root) {
         label(g, '?', x, y + 1, { size: 15, color: '#111' });
       }
     }
-    if (heard.length >= 3) blueDot(g, Y[0], Y[1], 9);
+    // With three rings the phone works out the spot itself (this step's clock is perfect).
+    const solved = heard.length >= 3
+      ? fix(heard.map((m) => ({ pos: m.s, took: m.r / C })), { solveClock: false, start: middleOf(heard.map((m) => m.s)) })
+      : { ok: false };
+    if (solved.ok) blueDot(g, ...v.px(solved.pos), 9);
     else { g.globalAlpha = 0.6; person(g, Y[0], Y[1] + 12, 1.1); g.globalAlpha = 1; }
     grabRing(g, Y[0], Y[1], 22);
     $('circlesLive').innerHTML = SAYS[heard.length];

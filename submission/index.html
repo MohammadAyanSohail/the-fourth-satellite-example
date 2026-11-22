@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nobody up there knows where you are</title>
+<title>The Fourth Satellite</title>
 <meta name="description" content="How your phone finds the blue dot on the map, in five small steps you can play with.">
 <script>document.documentElement.dataset.theme = localStorage.getItem('blue-dot-theme') || 'dark';</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,7 +15,7 @@
 <body>
 
 <header class="nav">
-  <a class="brand" href="#top"><span class="brand-dot"></span>The Blue Dot</a>
+  <a class="brand" href="#top"><span class="brand-dot"></span>The Fourth Satellite</a>
   <nav class="nav-steps" aria-label="Steps">
     <a href="#step1"><span>1</span>Timing</a>
     <a href="#step2"><span>2</span>Circles</a>
@@ -112,7 +112,7 @@
     <aside class="side">
       <div class="analogy">
         <p class="analogy-tag">Think of it like&hellip;</p>
-        <p><b>A friend texting &ldquo;I&rsquo;m 5 km from the station.&rdquo;</b> They could be anywhere on a ring around it. A second friend&rsquo;s ring crosses the first in two places. A third tells you which one.</p>
+        <p><b>A friend texting &ldquo;I&rsquo;m 5 km from the station.&rdquo;</b> They could be anywhere on a ring around it. A second friend&rsquo;s ring crosses the first in two places, and a third tells you which one.</p>
       </div>
       <ul class="try">
         <li>Turn on the satellites one at a time.</li>
@@ -197,7 +197,7 @@
     <aside class="side">
       <div class="analogy">
         <p class="analogy-tag">Think of it like&hellip;</p>
-        <p><b>Two torch beams.</b> Cross them at a right angle and they meet in a small, sharp spot. Cross them at a shallow angle and they overlap in a long smear. The rings work the same way.</p>
+        <p><b>Two torch beams.</b> Cross them at a right angle and they meet in a small, sharp spot, but at a shallow angle they overlap in a long smear. The rings work the same way.</p>
       </div>
       <ul class="try">
         <li>Press <b>Bunch them together</b> and watch the cloud of answers stretch out.</li>
@@ -289,9 +289,10 @@
   <details>
     <summary>What we simplified, and sources</summary>
     <ul>
+      <li>Step 1&rsquo;s arc isn&rsquo;t to scale, but its distance and delay come from a real orbit 20,200 km up.</li>
       <li>Steps 2 to 4 are a flat picture, so 3 satellites do the job that 4 do in the real, 3D world.</li>
       <li>Step 4&rsquo;s wobble is hugely exaggerated, so you can see it.</li>
-      <li>Step 5 has one bounce at most, flat glass walls and a perfect city map.</li>
+      <li>Step 5 has one bounce at most, flat glass walls and a perfect city map. Its sky turns about 140&times; faster than real life.</li>
       <li>Nothing slows the signal down on its way (in real life the upper air adds a few metres).</li>
     </ul>
     <ol class="sources">
@@ -301,14 +302,14 @@
       <li id="n4">50 bits a second, 12.5 minutes for the full list, and the signal&rsquo;s strength and pattern: the GPS specification IS-GPS-200.</li>
       <li id="n5">3D-map-aided positioning on Android from 2020: F. van Diggelen, &ldquo;Improving urban GPS accuracy for your app&rdquo;, Android Developers Blog.</li>
     </ol>
-    <p>All of it runs in your browser: about 770 lines of our own JavaScript, no libraries. <a href="https://github.com/" id="repoLink">Read the code on GitHub</a>.</p>
+    <p>All of it runs in your browser: about 830 lines of JavaScript, no libraries, built on the organisers&rsquo; exemplar. <a href="https://github.com/" id="repoLink">Read the code on GitHub</a>.</p>
   </details>
 </section>
 
 </main>
 
 <footer class="foot">
-  <p><span class="brand-dot"></span> Nobody up there knows where you are. <a href="https://github.com/" class="repo">Read the code</a>.</p>
+  <p><span class="brand-dot"></span> The Fourth Satellite. <a href="https://github.com/" class="repo">Read the code</a>.</p>
 </footer>
 
 <script src="../links.js"></script>

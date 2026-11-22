@@ -65,7 +65,7 @@ export function init(root) {
         ring(g, x, y, (m.took * C - shrink) / view.mpp); g.strokeStyle = P.violet; g.lineWidth = 2.5; g.stroke();
       }
       const Y = view.px(you);
-      if (met) { blueDot(g, Y[0], Y[1], dotSize); return; }
+      if (met) { blueDot(g, ...view.px(best.pos), dotSize); return; }   // the phone's best spot, not where you really are
       ring(g, Y[0], Y[1], 4); g.fillStyle = P.muted; g.fill();
       if (!useThird) return;
       for (let i = 0; i < 3; i++) {    // where each pair of rings crosses, nearest the middle
