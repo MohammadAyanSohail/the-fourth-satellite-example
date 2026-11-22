@@ -18,7 +18,13 @@ export function init(root) {
   const cv = $('timingCanvas'), slider = $('elevation');
   let elev = +slider.value, sentAt = performance.now();
 
-  slider.addEventListener('input', () => { elev = +slider.value; sentAt = performance.now(); });
+  // The result line. It's filled in from the start, so the box is already its full height.
+  const result = () => {
+    const d = rangeAt(elev);
+    setHTML($('sumDone'), `<b>${((d / C) * 1000).toFixed(1)} ms</b> × 300,000 km a second = <b>${fmtKm(d)}</b> away`);
+  };
+  result();
+  slider.addEventListener('input', () => { elev = +slider.value; sentAt = performance.now(); result(); });
 
   function draw(now) {
     const { g, w, h } = fitCanvas(cv);
@@ -55,9 +61,8 @@ export function init(root) {
     const ms = Math.min(elapsed, took) * 1000;
     $('watch').textContent = `${ms.toFixed(1)} ms`;
     $('watch').classList.toggle('done', f >= 1);
-    setHTML($('sum'), f >= 1
-      ? `<b>${(took * 1000).toFixed(1)} ms</b> × 300,000 km a second = <b>${fmtKm(d)}</b> away`
-      : 'The message is on its way…');
+    // Both captions are always in the page, one hidden, so the box keeps its height when they swap.
+    $('sum').classList.toggle('done', f >= 1);
     $('elevOut').textContent = elev > 75 ? 'right overhead' : elev < 15 ? 'near the horizon' : `${elev}° up`;
   }
   return loop(draw);

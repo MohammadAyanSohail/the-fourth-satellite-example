@@ -196,6 +196,11 @@ canvas.grabbing { cursor: grabbing; }
 .watch { font: 700 26px/1.1 "JetBrains Mono", monospace; color: var(--text); }
 .watch.done { color: var(--accent-ink); }
 .readout p { margin: 8px 0 0; }
+/* Both texts sit in the same cell, so the box is always as tall as the longer one and nothing below jumps. */
+.swap { display: grid; }
+.swap > * { grid-area: 1 / 1; }
+.swap > :last-child, .swap.done > :first-child { visibility: hidden; }
+.swap.done > :last-child { visibility: visible; }
 .meter { height: 8px; border-radius: 999px; background: var(--line); margin-top: 10px; overflow: hidden; }
 .meter span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--blue), var(--violet), var(--accent)); transition: width .4s; }
 
