@@ -1,4 +1,4 @@
-# Example submission: The throat in your phone
+# Example submission: Nobody up there knows where you are
 
 This repository is the example submission for the Global Virtual Hackathon 2026. The organisers made it to show the kind of complete entry we hope to see, and it isn't competing.
 
@@ -17,4 +17,4 @@ See the project here: <https://cishackathon.github.io/exemplar/submission/>
 
 ## Licence
 
-The code and text are under the MIT licence (see `LICENSE`). The hold music, the generated voices and the fonts have their own licences, listed at the end of `submission/README.md`.
+The code and text are under the MIT licence (see `LICENSE`). The fonts have their own licences, listed at the end of `submission/README.md`.

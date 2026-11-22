@@ -1,93 +1,93 @@
-# The throat in your phone
+# Nobody up there knows where you are
 
 This is the example project for the Global Virtual Hackathon 2026, made by the organisers to show the kind of complete entry we hope to see. It isn't competing. "Where this falls short" near the end says what a winning entry would do better.
 
-A second of CD audio takes 1,411,200 bits and an old digital landline used 64,000, but a mobile call usually gets about 12,000. That is too few to send the sound of a voice. So the caller's phone describes the throat and mouth that made the sound, 50 times a second, and the phone at the other end rebuilds the voice by sending a buzz or a hiss through a matching tube. This site is a working version of the simplest way to do that, the method secure government phones used in the 1980s, running in the browser.
+Most people think a satellite tells their phone where they are. It doesn't. No satellite knows you exist. About thirty GPS satellites, 20,200 km up, keep announcing which satellite they are, where they are and what time it is. Your phone only listens. A message that took 0.07 seconds to arrive came from 21,000 km away, and with enough of those distances there is only one place you can be standing. The catch is that your phone's clock is nowhere near good enough to time them, so it has to work out its own clock error at the same time, and that is why it needs one more satellite than you'd think. This site is a working version of that sum, running in the browser.
 
 ## What you can do with it
 
-### Plate I: what the other end hears of you
+### Sheet 1: where the blue dot comes from
 
-Record five seconds of yourself or borrow one of three voices. The voice is encoded and decoded as it plays. The throat in Fig. 1 is redrawn from every packet, a table lists what is in the current packet and how many bits each part takes, and a ruler places the bit rate between LPC-10 and a CD. Two spectrograms compare what was said with what the phone rebuilt. A switch flips between the real voice and the copy at the same moment, so you can hear exactly what was lost.
+Ten satellites go round the Earth, drawn to scale. Around every satellite your phone can hear is a circle as big as the distance its signal says it travelled, and you are where they meet. You can drag satellites along their orbit, switch them off, or drag yourself around the Earth, and watch the circles and the dot follow. You can set the phone's clock wrong by a millionth, a thousandth or a hundredth of a second, then flip a switch between trusting the clock and working it out. A close-up redraws itself at whatever zoom fits the error, from 60 m to 40,000 km across, with the blue dot, the pale shape around it, and the answers the phone would give over many seconds. A table lists what each satellite's signal took and what distance that means, and a button steps through the phone's guesses one at a time, starting from the centre of the Earth.
 
-### Plate II: why hold music sounds like that
+### Sheet 2: why the dot wanders downtown
 
-A piece of real elevator music goes through the same phone. The page explains why music breaks a codec built for one voice: a chord has several pitches but the packet has room for one, ten throat numbers can't hold the separate notes of several instruments, and anything without one clear pitch goes as hiss.
+A street seen end on, with glass buildings on both sides. As the sky turns, each satellite's signal is drawn as it reaches you: straight, bounced off the glass opposite, or blocked. Next to it is the map your phone would show, with a trail of where the dot has been. You can change how tall the buildings are, move where you stand, and switch between using every signal and checking them against a 3D city map first.
 
 ## How it works
 
-Speech is sampled 8,000 times a second, the band an ordinary phone call carries. Every 20 ms the encoder takes a 40 ms slice through a Hamming window, boosts its high frequencies slightly, and measures how much each sample resembles the ones before it (autocorrelation). The Levinson–Durbin recursion turns those eleven numbers into ten reflection coefficients. They describe a filter, and they can also be read as a tube of ten sections of different widths, which is the "throat" the page draws.
+The world is a flat slice through the middle of the Earth. Positions are in metres from the Earth's centre. Each satellite is on a circle 26,560 km from the centre and goes round once every 11 h 58 min, sped up on the page so one orbit takes four minutes. A satellite can be heard if it is at least 5° above your horizon and you haven't switched it off.
 
-The encoder also looks for a pitch in the slice. If it finds one, the sound is a buzz from the vocal folds; if not, it is a hiss, as in s, f and sh. Each packet carries four things:
+For each satellite it can hear, the phone gets two things: where the satellite is, and how long its signal took by the phone's own clock. That time is the real travel time, plus noise of about 1.5 m (in distance), plus the phone's clock error. Multiplying by the speed of light gives a distance that is wrong by the same amount for every satellite. GPS engineers call it a pseudorange.
 
-| Part | How it is sent | Bits |
-|---|---|---|
-| Throat | Ten reflection coefficients as log-area ratios, 5 bits each for the first four, 4 for the next four, then 3 and 2 | 41 |
-| Pitch | The length of one vocal-fold cycle, 20 to 147 samples (54 to 400 Hz) | 7 |
-| Buzz or hiss | One bit | 1 |
-| Loudness | One of 32 levels on a decibel scale | 5 |
-| Total | | 54 |
+The receiver, `fix()` in `js/receiver.js`, solves for three unknowns: x, y, and the clock error. It uses Gauss–Newton least squares:
 
-At 50 packets a second that comes to 2,700 bits a second. The page takes every rate and bit count from `bitsPerFrame()` and `bitrate()` in `js/codec.js`, so the numbers on screen are the ones the encoder uses.
+1. Guess. The first guess is the centre of the Earth with a perfect clock.
+2. Work out how long each signal would have taken if the guess were right.
+3. Compare with what was measured. For each satellite, note which way moving the guess would change that time.
+4. Solve a 3×3 set of equations for the move that best shrinks all the differences at once, and take it.
+5. Repeat until the move is under a millimetre. It takes about five steps.
 
-The receiver blends the throat from one packet to the next and drives it with clicks or with noise. A click is a single sharp tick, standing in for the moment the vocal folds snap shut. For a buzz it plays one click per pitch period, and for a hiss it plays noise. Because only these four things are sent, the copy keeps the words and the tune of the voice but loses its exact waveform. It sounds robotic because every buzz is built from the same simple tick.
+With the clock switch on "trust the phone's clock", the same code solves for just x and y and leaves the clock error in the distances, which is why the dot lands hundreds of kilometres away.
+
+The pale shape around the dot comes from `spread()`. It inverts the same matrix the solver used to find how much the answer moves for a metre of error in each distance (GPS engineers call this dilution of precision), and scales it by the noise. It gets long and thin when the satellites you hear are bunched together, and it is usually taller than it is wide, because every satellite you can hear is above you.
+
+On Sheet 2 the satellites are so far away that their signals arrive as parallel lines. `signalPath()` in `js/canyon.js` decides, for each satellite, whether the line from you to it clears the roof on its side. If not, it checks for a single bounce off the glass wall opposite, which adds `2 × (your distance from that wall) × cos(elevation)` metres to the trip. Anything else is blocked. The same `fix()` then solves for across-the-street position, height and clock. With the city-map switch on, the phone tries every spot across the street 25 cm apart, predicts how long every signal should take from there with its map (bounces included), and keeps the spot where the predictions fit best after the common clock error is taken out.
 
 ### What is computed and what is drawn by hand
 
-Everything you hear is computed from the input. The packet table shows the values and bits of the current packet. The spectrograms, the spectrum, the F1 to F3 labels and the throat in Fig. 1 are computed from the input and the packets as they play. The clicks drawn beside the throat are spaced by the real pitch, and the hold-music caption counts how many packets were buzz and how many were hiss.
+Every position, distance, clock error, pale shape and message on both sheets is computed by the code as it runs. The receiver is only given satellite positions and travel times. It never sees where you really are. The page uses your true position only to say how far off the dot is and to draw you.
 
-Two things are drawn by hand. The dots for hiss beside the throat are random, and the waveform and moving packets in the call diagram at the top are decoration.
+Three things are decoration. The strip at the top is not to scale, and the time in it is your computer's clock. The dots moving along the lines in Fig. 1 don't travel at any real speed. The figure of a person and the street names are drawings.
 
 ## What we simplified
 
-The throat is a model of a tube, and it isn't the caller's anatomy. Ten reflection coefficients describe a tube with no side branch, so there is no nasal cavity, and the shape of the vocal-fold pulse and the effect of the lips end up folded into the same ten numbers. Fig. 1 is a fixed drawing of a head in which the airway, tongue, jaw and lips move to fit the ten areas. Before drawing, the areas are scaled to a common average size, kept within limits and eased from one packet to the next, so the drawing shows which way the throat is changing more faithfully than by how much.
+The world is flat. A real phone solves for x, y, z and the clock, so it needs four satellites. Ours lives in a slice of the Earth, so it needs three. All ten satellites are on one circle, and we picked ten so that a few are always in view. A real sky is full of satellites going different ways.
 
-Our packet is close to LPC-10's but not the same. LPC-10 sent 54 bits every 22.5 ms: 41 for the throat, 7 shared between pitch and buzz-or-hiss, and the rest for loudness and for keeping the two ends in step. Ours sends 54 bits every 20 ms with pitch and buzz-or-hiss separate and no way of keeping in step, so it couldn't talk to a real LPC-10 phone.
+The distances are made up. Each one is the true distance plus noise we chose, so the pale shape always matches the spread of the dots exactly. A real phone has to estimate its own noise.
 
-There is no radio. Nothing models lost packets, error protection or the network choosing a rate.
+Nothing slows the signal. In real life the upper atmosphere delays it by several metres, more by day than by night. We also ignore the Earth turning while the signal travels, and the satellites' orbits are perfect circles whose positions the phone knows exactly.
 
-Everything is narrowband. Many calls now use wideband codecs such as AMR-WB and EVS, which carry 7 kHz or more, but everything here stops at 4 kHz.
+The street has flat walls, one bounce at most, and a receiver that always picks the straight signal when both arrive. Real reflections blur together with the straight signal. Our city map is perfect, and our phone knows its height and which street it's in, so the map check works far better here than in a real city.
 
 ## Where this falls short
 
-### You can hear what the codec does, but you can't take it apart
+### You never see how the phone measures the time
 
-Plate I has one phone with fixed settings. You hear that ten numbers, a pitch, a loudness and a buzz-or-hiss bit add up to a voice you can follow, but you never get to switch one part off and hear what it was doing, or spend fewer bits on the throat and hear the vowels blur. A winning entry would let the visitor remove each stage, so the explanation comes from what they hear.
+The whole page rests on "the signal took 71.714 ms". That is the hard part, and we skip it. A GPS signal arrives far weaker than the noise around it. The phone finds it by sliding a copy of the satellite's known pattern of 1,023 on-off chips, which repeats every millisecond, against what the antenna picks up, until they line up. Our distances come straight from the true distance plus noise. A winning entry would let the visitor slide the pattern themselves and watch a match rise out of the noise.
 
-### The code doesn't show that the receiver works from the packet alone
+### The code doesn't prove the receiver works from the measurements alone
 
-The page rests on the claim that your phone rebuilds the voice from the bits it is sent. That is true here, but only because `synthesise()` happens to read just the rounded values. The decoder takes the encoder's own frame objects, which carry the unrounded numbers right beside the rounded ones, no packet is ever written out as bits, and there are no tests. A winning entry would build the receiver as its own module that reads nothing but a stream of bits, with a test that proves it.
+`fix()` is only given satellite positions and travel times, and it is careful not to look at anything else. But nothing enforces that, and there are no tests. A winning entry would test the receiver against known answers: the exact position when there is no noise, the clock error recovered to the nanosecond, a refusal when there are too few satellites, and the same answer from any starting guess.
 
-### It uses the 1984 buzz-or-hiss method, not the pulse search phones use now
+### The world is flat
 
-Every phone call today sends the same kind of throat, but chooses its buzz far more carefully: every 5 ms it tries out patterns of pulses and sends the pattern that sounds closest to the voice. That method, ACELP, is why a real call sounds like a person and ours sounds like a robot. Footnote 4 explains it, but the site doesn't build it, so it doesn't show how modern codecs choose what drives the throat.
+The flat slice makes the pictures clear, but it loses the step most people stumble on, which is that the real thing needs four satellites, not three. A winning entry would have a 3D globe, or at least a second view that shows why the fourth is needed.
 
 ### Smaller problems
 
-- The recorder uses `ScriptProcessorNode`, which browsers have deprecated.
-- A few functions and constants are no longer used and should have been deleted.
+- On Sheet 2 the sky turns about seventy times faster than real life, which makes the dot jump more often than it really would.
+- The side view draws the dot's height even when it is far above the street, clamped to the edge of the picture.
+- `mapCheck()` is exported only so we could test it from the command line.
 
 ## Things we didn't make ourselves
 
 | What | Where it's used | Why we chose it |
 |---|---|---|
-| The Web Audio API, built into browsers | Playing sound and opening the microphone. All the filtering, resampling and coding is our own code. | A web page can't play or record sound any other way, and it needs nothing installed. |
-| Google Gemini text-to-speech (voices Kore, Puck and Aoede) | The three borrowed voices | We needed clear speech saying exact words without recording real people. The files were made once and are stored here, and the site never contacts Google. |
-| "Local Forecast – Elevator" by Kevin MacLeod | The hold music in Plate II | It sounds like real hold music, and its licence lets us change it. We downloaded it from incompetech.com. |
-| A plate from *Gray's Anatomy* (1918, public domain) | The outline of the head in Fig. 1 follows it loosely | It's a clear side view of the throat and mouth that anyone can use. |
-| IM Fell English, Alegreya and Alegreya SC, from Google Fonts | The type | They suit the look of an old book of anatomy plates. |
+| The HTML canvas, built into browsers | All the drawings | It draws anything we can describe in code, with nothing to install. |
+| Fraunces, Source Serif 4 and IBM Plex Mono, from Google Fonts | The type | A serif for reading, and a typewriter face for the numbers, to suit a field guide. |
+
+Everything else, including the solver, the orbits and the street, is our own code.
 
 ## Sources for the facts on the page
 
-- CD audio, 44,100 samples × 16 bits × 2 channels: the Red Book standard, IEC 60908.
-- Landlines at 64,000 bit/s: ITU-T G.711 (1972), <https://www.itu.int/rec/T-REC-G.711>.
-- AMR, 4.75 to 12.2 kbit/s in 20 ms frames, standard for 3G: 3GPP TS 26.071, <https://www.3gpp.org/DynaReport/26071.htm>. Its pulse search every 5 ms (ACELP): 3GPP TS 26.090, <https://www.3gpp.org/DynaReport/26090.htm>.
-- LPC-10, US Federal Standard 1015 (1984), 54 bits every 22.5 ms at 2,400 bit/s: FIPS 137, <https://en.wikipedia.org/wiki/FIPS_137>. Its use in STU-III secure phones: Crypto Museum, <https://cryptomuseum.com/ref/codec/lpc10>.
-- Atal and Schroeder at Bell Labs, and Itakura and Saito at NTT: B. S. Atal, "The History of Linear Prediction", *IEEE Signal Processing Magazine* 23(2), 2006.
-- N. Levinson, "The Wiener RMS error criterion in filter design and prediction", *Journal of Mathematics and Physics* 25, 1947. J. Durbin, "The fitting of time series models", *Review of the International Statistical Institute* 28, 1960. The figure of about a hundred multiplications is our own count: 110 multiplications and 10 divisions for ten sections.
-- F1 and F2 doing most of the work of telling vowels apart: G. E. Peterson and H. L. Barney, "Control methods used in a study of the vowels", *JASA* 24(2), 1952.
-- EVS, agreed in 2014 as 3GPP TS 26.441 and first launched in 2016, and its switch between speech and music coding: Dietz et al., "Overview of the EVS codec architecture", ICASSP 2015.
-- Whispering with the vocal folds slightly apart: UCL phonetics course notes, <https://www.phon.ucl.ac.uk/courses/spsci/iss/week4.php>.
+- GPS constellation size, orbit height of 20,200 km, six orbital planes and an orbit of just under 12 hours: GPS.gov, "Space segment", <https://www.gps.gov/systems/gps/space/>.
+- Phones "typically accurate to within a 4.9 m (16 ft.) radius under open sky": GPS.gov, "GPS accuracy", <https://www.gps.gov/systems/gps/performance/accuracy/>.
+- Satellite clocks 38 µs a day fast without correction, and the 10.22999999543 MHz setting: N. Ashby, "Relativity in the Global Positioning System", *Living Reviews in Relativity* 6, 2003.
+- The navigation message at 50 bit/s, 25 pages of 30 seconds (12.5 minutes) for the full almanac, and the 1,023-chip code repeating every millisecond: the GPS interface specification IS-GPS-200, <https://www.gps.gov/technical/icwg/>.
+- Pseudoranges, least squares and dilution of precision: P. Misra and P. Enge, *Global Positioning System: Signals, Measurements, and Performance*, 2nd ed., Ganga-Jamuna Press, 2006.
+- 3D-mapping-aided positioning on Android from 2020: F. van Diggelen, "Improving urban GPS accuracy for your app", Android Developers Blog, December 2020. Shadow matching: P. D. Groves, "Shadow matching: a new GNSS positioning technique for urban canyons", *Journal of Navigation* 64(3), 2011.
+- The speed of light, 299,792,458 m/s, exact by definition of the metre since 1983.
 
 ## Running it
 
@@ -97,26 +97,23 @@ There's no build step and nothing to install. From the top of the repository, ru
 python3 -m http.server 8642
 ```
 
-Then open <http://localhost:8642/submission/>. Browsers won't load the JavaScript modules from a file opened directly, which is why it needs a server. Recording also needs localhost or HTTPS. With no microphone, or with permission refused, the page says so, and the borrowed voices and sound files still work.
+Then open <http://localhost:8642/submission/>. Browsers won't load JavaScript modules from a file opened directly, which is why it needs a server.
 
 ## The code
 
-There are about 1,800 lines of JavaScript, with no libraries.
+There are about 900 lines of JavaScript, with no libraries.
 
 | File | What's in it |
 |---|---|
-| `js/dsp.js` | FFT, windowing, autocorrelation, Levinson–Durbin, tube areas, log-area-ratio rounding, pitch detection |
-| `js/codec.js` | The vocoder: frame analysis, bit counting and the click-or-noise receiver |
-| `js/audio.js` | Loading, resampling, recording and the A/B player |
-| `js/viz.js` | The call diagram, Fig. 1, the spectrum and the spectrograms |
-| `js/app.js`, `js/hold.js`, `js/ui.js` | The two plates and the shared controls |
+| `js/geo.js` | The speed of light and the sizes of things, small vector helpers, a linear solver, seeded noise |
+| `js/receiver.js` | The receiver: `fix()`, which turns travel times into a position and a clock error, and `spread()`, the pale shape |
+| `js/sky.js` | Sheet 1's world: the satellites, their orbit, your horizon and what each signal took |
+| `js/canyon.js` | Sheet 2: signal paths in the street, bounces, and the city-map check |
+| `js/viz.js` | Every drawing: the strip, Fig. 1 to Fig. 4 |
+| `js/app.js`, `js/ui.js` | Sheet 1's controls and the shared switch, play button and number formats |
 
 ## Licences and credits
 
 The code and text are under the MIT licence; see `LICENSE` at the top of the repository.
 
-`audio/hold-music.wav` is "Local Forecast – Elevator" by Kevin MacLeod (incompetech.com), licensed under Creative Commons: By Attribution 4.0, <https://creativecommons.org/licenses/by/4.0/>. We kept the first 14 seconds and mixed it to one channel at 8 kHz, and the versions the site plays through the phone are our own changes.
-
-`audio/caller-*.wav` were generated with Google Gemini text-to-speech. Under the Gemini API terms, Google doesn't claim ownership of what it generates.
-
-The fonts are IM Fell English by Igino Marini, and Alegreya and Alegreya SC by Juan Pablo del Peral (Huerta Tipográfica), all under the SIL Open Font License.
+The fonts are Fraunces by Undercase Type, Source Serif 4 by Frank Grießhammer for Adobe, and IBM Plex Mono by Mike Abbink and Bold Monday for IBM, all under the SIL Open Font License.

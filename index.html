@@ -129,7 +129,7 @@ footer .in { max-width: 804px; margin: 0 auto; }
     <p class="muted">This project is locked in. This is the final submission.</p>
 
     <span class="label">Project title</span>
-    <div class="field">The throat in your phone</div>
+    <div class="field">Nobody up there knows where you are</div>
 
     <div class="row">
       <div class="cell">
@@ -145,22 +145,22 @@ footer .in { max-width: 804px; margin: 0 auto; }
     </div>
 
     <span class="label">Tech used</span>
-    <div class="field long">Plain JavaScript, HTML and CSS, with no libraries or build step. Web Audio only plays and records the sound. The voices were made with Google Gemini text-to-speech. Hosted on GitHub Pages.</div>
+    <div class="field long">Plain JavaScript, HTML and CSS, with no libraries or build step. All the drawing is on the HTML canvas. The fonts are from Google Fonts. Hosted on GitHub Pages.</div>
 
     <span class="label">What your project is about</span>
-    <div class="field long">A phone call has room for about 12,000 bits a second, and a voice doesn't fit. So the phone works out the shape of your throat and mouth 50 times a second and sends that, and the other phone builds a throat to match and blows through it. Our site is a working version of the simplest way to do it, the 1980s method today's phones grew out of. You can record yourself and hear what the other end gets, flip back to your real voice at the same moment, watch the throat move with each packet, and hear why hold music sounds so bad.</div>
+    <div class="field long">No satellite knows where you are. About thirty of them keep saying who they are, where they are and what time it is, and your phone works out the blue dot from how late each message arrives. The catch is that a phone's clock is far too poor to time them, so it has to work out its own clock as well. Our site is a working version of that sum. You can drag satellites around, set the phone's clock wrong and watch the dot land hundreds of kilometres away, step through the phone's guesses, and see why the dot wanders between tall glass buildings.</div>
 
     <span class="label">Who is it for?</span>
-    <div class="field long">Anyone from about 13 up who uses a phone and has never thought about what happens to their voice on the way. You hear each idea before you read about it, so there's no maths to get through first.</div>
+    <div class="field long">Anyone from about 13 up who has followed the blue dot on a map and assumed a satellite was watching. You move things and see what happens before you read why, so there's no maths to get through first.</div>
 
     <span class="label">One-line summary</span>
-    <div class="field long">Hear your own voice the way a phone sends it: a throat shape, a pitch and a loudness, 50 times a second, rebuilt at the other end.</div>
+    <div class="field long">Move the satellites, break your phone's clock, and see where the blue dot on your map really comes from.</div>
 
     <span class="label">How it works</span>
-    <div class="field long">Every 20 ms the site takes a slice of sound and finds ten numbers that describe it as a tube of ten sections, using linear prediction and the Levinson–Durbin recursion. It also measures the pitch, the loudness, and whether the sound is a buzz or a hiss. Those four things are rounded to 54 bits, which at 50 packets a second comes to 2.7 kbit/s, close to LPC-10, the US standard from 1984. The other end rebuilds the voice by sending clicks at that pitch, or noise, through the tube. Phones today send the same throat with a smarter buzz, which we explain but don't build. All of it is our own JavaScript, about 1,800 lines, running in your browser.</div>
+    <div class="field long">Each satellite the phone hears gives it two things: where the satellite is, and how long its signal took by the phone's clock. Times the speed of light, that is a distance that's off by the same amount for every satellite, because the phone's clock is wrong. The receiver solves for position and clock error together by Gauss–Newton least squares, starting from the centre of the Earth, and inverts the same matrix to draw the pale shape around the dot. The world is a flat slice of the Earth, so it needs three satellites, not four. In the street, each signal is traced straight, bounced off glass or blocked, and a city-map mode tries every spot across the street to find the best fit. It's about 900 lines of our own JavaScript, running in your browser.</div>
 
     <span class="label">Why it matters</span>
-    <div class="field long">Billions of calls a day work like this, and almost nobody knows their phone is rebuilding a voice. Once you've heard your own voice turned into ten numbers and a pitch, everyday things start to make sense: a bad line goes robotic instead of crackly, a whisper still gets through, and hold music turns to mush. It's also an idea that turns up all over engineering. When there isn't room to send something, you send a description good enough to rebuild it.</div>
+    <div class="field long">Billions of people follow the blue dot every day, and almost nobody knows it comes from timing radio signals to a few billionths of a second, or that the phone has to correct its own clock to do it. Once you've watched the circles fail to meet, everyday things start to make sense: why the dot takes a while to appear in the middle of nowhere, why it jumps into buildings downtown, and why the pale circle grows and shrinks. It's also an idea that turns up all over engineering. When you can't measure something, make it one more unknown and let an extra measurement pin it down.</div>
 
     <span class="label">Demo video <span class="pill pill-wait">Not recorded</span></span>
     <div class="field"><span class="unset">This is a demo project, so no video was recorded. A real submission needs one.</span></div>

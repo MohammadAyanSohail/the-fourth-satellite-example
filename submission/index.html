@@ -3,145 +3,134 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The throat in your phone</title>
-<meta name="description" content="A mobile call has room for about 12,000 bits a second, too few to send the sound of a voice, so your phone sends the shape of the caller's throat instead. Record yourself and hear what the other end gets.">
+<title>Nobody up there knows where you are</title>
+<meta name="description" content="No satellite knows where you are. They only say who they are and what time it is, and your phone works out the blue dot from how late each message arrives. Move the satellites, break the phone's clock, and see what happens.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,500;0,700;1,400;1,700&family=Alegreya+SC:wght@400;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=IBM+Plex+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 </head>
 <body>
 
 <header class="top">
-  <h1>The throat in your phone</h1>
+  <p class="kicker">A field guide to the blue dot</p>
+  <h1>Nobody up there knows where you are</h1>
   <p class="lead">
-    A second of CD audio takes 1,411,200 bits, and an old landline used 64,000 for a second of voice. A mobile call usually gets
-    about 12,000,<a class="fn" href="#fn1" id="r1">1</a> which is far too few to send the sound of someone&rsquo;s voice. So the
-    caller&rsquo;s phone listens in slices a fiftieth of a second long, works out what shape their throat and mouth were in for each
-    slice, and sends only that. Your phone builds a throat to match and blows through it,<a class="fn" href="#fn2" id="r2">2</a>
-    and that is the voice you hear.
+    The blue dot on your map isn&rsquo;t something a satellite tells your phone. No satellite knows where you are, or that you
+    exist. About thirty of them, 20,200 km up,<a class="fn" href="#fn1" id="r1">1</a> do one thing over and over: they say which
+    satellite they are, where they are, and what time it is by the atomic clock on board. Your phone only listens. From how late
+    each message arrives, it works out where it must be standing, about once a second, usually to within a few metres.<a class="fn" href="#fn2" id="r2">2</a>
   </p>
 </header>
 
 <main>
 
-<section class="line" aria-label="The call from end to end">
-  <canvas id="wire" role="img" aria-label="The caller, their phone, the packets travelling between the phones, your phone and you"></canvas>
+<section class="strip" aria-label="A satellite announcing itself to a phone that only listens">
+  <canvas id="strip" role="img" aria-label="A satellite sending out its name and the time, and a phone listening"></canvas>
 </section>
 
-<section class="demo" id="you">
-  <h2><span class="plate">Plate I.</span> What the other end hears of you</h2>
-  <div class="start">
-  <div class="recbox">
-    <button type="button" class="rec-btn" id="recBtn"><span class="dot"></span>Record yourself</button>
-    <p>Say anything for five seconds and you will hear it back the way a phone of the 1980s would have sent it. The recording never leaves your browser.<a class="fn" href="#fn3" id="r3">3</a></p>
-  </div>
-  <p class="callers" id="callers">
-    Or borrow a voice:<a class="fn" href="#fn4" id="r4">4</a>
-    <span class="nb"><button type="button" data-clip="a" aria-pressed="true">&ldquo;I&rsquo;m running a bit late&rdquo;</button>,</span>
-    <span class="nb"><button type="button" data-clip="b" aria-pressed="false">&ldquo;the signal&rsquo;s terrible&rdquo;</button>,</span>
-    <span class="nb">or <button type="button" data-clip="c" aria-pressed="false">&ldquo;happy birthday!&rdquo;</button>.</span>
-  </p>
+<section class="sheet" id="dot">
+  <h2><span class="num">Sheet 1</span> Where the blue dot comes from</h2>
 
-  </div>
-
-  <div class="call" id="call">
-    <div class="call-left">
+  <div class="work">
+    <div class="work-left">
       <div class="transport">
-        <button class="key big" id="play" type="button" aria-label="Play"><svg viewBox="0 0 24 24" aria-hidden="true"><path id="playIcon" d="M8 5l11 7-11 7z"/></svg></button>
-        <div class="slide" data-for="main">
-          <button type="button" class="slide-label" data-which="original">the real voice</button>
-          <button type="button" class="slide-track" role="switch" aria-checked="true" aria-label="Hear the copy the phone made"><span class="slide-knob"></span></button>
-          <button type="button" class="slide-label on" data-which="rebuilt">what the phone made</button>
+        <button class="key" id="play" type="button" aria-label="Pause the sky"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg></button>
+        <div class="switch" id="clockSwitch">
+          <button type="button" class="switch-label" data-side="a">trust the phone&rsquo;s clock</button>
+          <button type="button" class="switch-track" role="switch" aria-checked="true" aria-label="Solve for the phone's clock too"><span class="switch-knob"></span></button>
+          <button type="button" class="switch-label on" data-side="b">work out the clock too</button>
         </div>
       </div>
-      <div class="throat-box">
-        <canvas id="throat" role="img" aria-label="The throat and mouth as the phone has rebuilt them, redrawn for every packet"></canvas>
-        <div class="rec" id="rec" hidden>
-          <p class="rec-title" id="recTitle">Allow the microphone</p>
-          <div class="rec-row"><span>Your level</span><div class="meter"><div id="recLevel"></div></div></div>
-          <div class="rec-row"><span>Time left</span><div class="meter time"><div id="recProg"></div></div></div>
-          <button type="button" class="textbtn" id="recCancel">Cancel</button>
-        </div>
-      </div>
-      <p class="figcap legend"><span class="fig">Fig. 1.</span> <i>a</i>, nasal cavity; <i>b</i>, hard palate; <i>c</i>, soft palate; <i>d</i>, tongue; <i>e</i>, vocal folds; <i>f</i>, spine. The air in the throat is drawn in blue and redrawn from every packet. The phone only knows a tube of ten sections, and the drawing is just a way to picture it.</p>
-      <div class="spectrum-wrap desk">
-        <canvas id="spectrum" role="img" aria-label="The sound at this moment, with the outline of the throat's resonances"></canvas>
-        <p class="figcap">The blue outline is what the phone sent. Its first two peaks, F1 and F2, mostly decide the vowel.</p>
-      </div>
+      <canvas id="sky" tabindex="0" role="img" aria-label="The Earth, the satellites on their orbit, and a circle around each satellite you can hear. Drag a satellite to move it, click it to stop listening, or drag yourself around the Earth. The arrow keys move you."></canvas>
+      <p class="figcap"><span class="fig">Fig. 1.</span> The Earth and the satellites to scale. Around each satellite you can hear is a circle as big as the distance its signal says it travelled. You are wherever the circles meet. <b>Drag</b> a satellite along its orbit, <b>click</b> one to stop listening to it, or drag <b>you</b> around the Earth.</p>
+      <canvas id="close" role="img" aria-label="A close-up of where you stand, with the blue dot, the pale circle around it and the same distance circles"></canvas>
+      <p class="figcap"><span class="fig">Fig. 2.</span> <span id="closeCap"></span> The dots are the answers the phone would give over many seconds, because each measured distance is a few metres off in a different way each time.</p>
     </div>
 
-    <div class="call-right" id="controls">
-      <p class="now" id="now" aria-live="polite">Record yourself, or borrow one of the voices above. The switch next to the play button flips between the real recording and what the phone rebuilt.</p>
+    <div class="work-right">
+      <p class="now" id="now" aria-live="polite"></p>
 
       <div class="how">
-        <p>This is your voice sent the way secure government phones sent it in the 1980s. Phones today still send the same throat, with a smarter buzz.<a class="fn" href="#fn5" id="r5">5</a></p>
-        <p>Every 20 ms the phone sends four things: the shape of the throat as ten numbers, the pitch of the voice, how loud it is, and one bit saying whether the sound was a buzz or a hiss. The other phone makes the buzz from clicks. A click is one sharp tick, standing in for each time the vocal folds snap shut, and it is repeated at the pitch of the voice. For a hiss it uses noise, which is how it says s, f and sh, and why a whisper still gets through.<a class="fn" href="#fn6" id="r6">6</a><span class="mob-only"> The phone only knows a tube of ten sections, and the drawing above is just a way to picture it.</span></p>
+        <p>Radio travels at the speed of light, 300,000 km a second, so a satellite&rsquo;s message takes between about 67 and 86 thousandths of a second to reach you. Your phone compares the time in the message with the time it arrived, and that tells it how far away the satellite is. One distance puts you somewhere on a circle around that satellite. Two circles cross in two places. A third picks one.</p>
+        <p>That only works if your phone&rsquo;s clock is as good as the satellites&rsquo;, and it isn&rsquo;t.<a class="fn" href="#fn3" id="r3">3</a> A clock a millionth of a second out makes every distance 300 metres wrong. So the phone treats its own clock error as one more unknown and uses one more satellite to find it. Every distance is too long by the same amount, and only one amount makes all the circles meet in a point.</p>
       </div>
 
-      <div class="packet-wrap">
-        <h3 class="small-h" id="packetHead">The packet leaving the phone now</h3>
-        <div class="readout" id="packet" aria-live="off"></div>
-        <div class="ruler" id="ruler" aria-hidden="true"></div>
-        <p class="rate-text" id="rates"></p>
-      </div>
+      <p class="choices" id="clockChoices">
+        Set the phone&rsquo;s clock wrong by
+        <span class="nb"><button type="button" data-err="0">nothing</button>,</span>
+        <span class="nb"><button type="button" data-err="0.000001">a millionth of a second</button>,</span>
+        <span class="nb"><button type="button" data-err="0.001">a thousandth</button>,</span>
+        <span class="nb">or <button type="button" data-err="0.01">a hundredth</button>.</span>
+        Then flip the switch above Fig. 1.
+      </p>
+      <div class="ruler" id="ruler" aria-hidden="true"></div>
+      <p class="figcap">How far off a distance comes out for each amount the clock is wrong.</p>
 
-      <div class="spectrum-wrap mob">
-        <canvas id="spectrumM" role="img" aria-label="The sound at this moment, with the outline of the throat's resonances"></canvas>
-        <p class="figcap">The blue outline is what the phone sent.</p>
-      </div>
+      <h3 class="small-h">What the phone heard this second</h3>
+      <div class="readout" id="heard"></div>
+      <p class="chips-line">Listening to: <span id="satChips"></span></p>
+      <p class="spread" id="spread"></p>
+
+      <h3 class="small-h">How the phone worked it out</h3>
+      <p>The phone can&rsquo;t solve this in one go. It guesses, works out how late each signal would have been if the guess were right, and moves the guess to shrink the difference.<a class="fn" href="#fn4" id="r4">4</a></p>
+      <button type="button" class="btn" id="stepBtn">Watch it, one guess at a time</button>
+      <ol class="steps" id="steps"></ol>
     </div>
-  </div>
-
-  <div class="whole">
-    <canvas id="spectro" title="Click to jump to this moment" role="img" aria-label="Sound pictures of the real and rebuilt recording. Click, or use the arrow keys, to move to a moment."></canvas>
   </div>
 </section>
 
-<section class="demo" id="music">
-  <h2><span class="plate">Plate II.</span> Why hold music sounds like that</h2>
-  <p class="demo-lead">
-    Everything above assumes one throat and one voice. This is a piece of real elevator music<a class="fn" href="#fn7" id="r7">7</a> going through the same phone.
+<section class="sheet" id="street-sheet">
+  <h2><span class="num">Sheet 2</span> Why the dot wanders downtown</h2>
+  <p class="sheet-lead">
+    Everything on Sheet 1 assumes each signal comes straight from the satellite. Between tall buildings, many don&rsquo;t. This is
+    a street seen end on, with glass on both sides. Stand still and let the sky turn: the satellites move,<a class="fn" href="#fn5" id="r5">5</a> different signals get blocked or bounce, and the dot on the map wanders even though you haven&rsquo;t moved.
   </p>
-  <div class="hold">
-    <canvas id="musSpectro" class="spectro small" title="Click to jump to this moment" role="img" aria-label="Sound pictures of the music before and after the phone"></canvas>
-    <div class="hold-bar">
-      <button type="button" class="key" id="musPlay" aria-label="Play the hold music" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="musIcon" d="M8 5l11 7-11 7z"/></svg></button>
-      <div class="slide" data-for="music" id="musAB">
-        <button type="button" class="slide-label" data-which="original">the music</button>
-        <button type="button" class="slide-track" role="switch" aria-checked="true" aria-label="Hear the music through the phone"><span class="slide-knob"></span></button>
-        <button type="button" class="slide-label on" data-which="rebuilt">through the phone</button>
-      </div>
+  <div class="street">
+    <div class="street-side">
+      <canvas id="street" role="img" aria-label="A street between two glass buildings, with the path of each satellite's signal: straight, bounced off a wall, or blocked. Click or drag to move where you stand."></canvas>
+      <p class="figcap"><span class="fig">Fig. 3.</span> <span class="k direct">Blue</span>: straight from the satellite. <span class="k bounce">Orange</span>: bounced off the glass opposite, so it took the long way round. <span class="k blocked">Grey</span>: blocked. Click the street to move where you stand.</p>
     </div>
-    <p class="figcap" id="musStat"></p>
+    <div class="street-map">
+      <canvas id="streetMap" role="img" aria-label="The map your phone shows, with the blue dot and the trail of where it has been"></canvas>
+      <p class="figcap"><span class="fig">Fig. 4.</span> Your phone&rsquo;s map. The fading trail is where the dot has been.</p>
+    </div>
   </div>
+  <div class="street-bar">
+    <button type="button" class="key" id="streetPlay" aria-label="Pause the sky over the street"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg></button>
+    <label class="range">How tall the buildings are <input type="range" id="height" min="1" max="90" step="1" value="40"> <output id="heightOut"></output></label>
+    <label class="range">Where you stand <input type="range" id="where" min="1" max="21" step="0.5" value="6"></label>
+    <div class="switch" id="mapSwitch">
+      <button type="button" class="switch-label on" data-side="a">use every signal</button>
+      <button type="button" class="switch-track" role="switch" aria-checked="false" aria-label="Check signals against a city map"><span class="switch-knob"></span></button>
+      <button type="button" class="switch-label" data-side="b">check a city map first</button>
+    </div>
+  </div>
+  <p class="now" id="streetNow" aria-live="polite"></p>
   <div class="explain">
-    <p>Each packet has room for one pitch, but a chord is several notes at once. The phone picks the pitch that repeats most clearly and rebuilds every note as clicks at that one pitch.</p>
-    <p>Ten throat numbers can only describe a smooth outline with a few bumps. That is enough for the resonances of a mouth but nowhere near enough for a piano and a bass playing different notes, so what gets through is the overall brightness of the band.</p>
-    <p>When the phone can&rsquo;t find one clear pitch at all, the packet goes as hiss, so drums and busy passages come out as noise shaped like the band. In this piece that is most of the packets, which is why the lower picture is mostly a blur.</p>
-    <p>A real phone today chooses its pulses to match the sound, so its hold music is less mushy than ours, but it is still built around one voice. Newer phones are starting to fix this.<a class="fn" href="#fn8" id="r8">8</a></p>
+    <p>A bounced signal arrives late, because it went to the far wall and back. The phone can&rsquo;t tell it bounced. It only sees a satellite that seems further away than it is, and it pushes your dot away from that satellite to make the circles meet. A signal that bounced off the building on your left came from a satellite on your right, so the dot slides left, often into the building.</p>
+    <p>The obvious fix is to ignore satellites low in the sky, but they are the ones that tell left from right. With only the satellites straight overhead, the circles cross at a shallow angle and the pale circle grows wide across the street. Make the buildings taller and watch both problems get worse together.</p>
+    <p>Newer phones use a 3D map of the city instead.<a class="fn" href="#fn6" id="r6">6</a> The phone already knows it&rsquo;s at street level and roughly which street it&rsquo;s in. So it tries standing at each spot across the street, uses the map to predict how late every signal should be from there, bounces included, and picks the spot where the predictions fit. Flip the switch to try it. Our map is perfect and our walls are flat glass, so it works better here than it does in a real city.</p>
   </div>
 </section>
 
 <section class="footnotes" id="notes">
-  <h2>Footnotes</h2>
+  <h2>Notes</h2>
   <ol>
-    <li id="fn1">AMR, the standard codec for 3G calls and widely used on 2G, runs at anything from 4,750 to 12,200 bits a second and steps down when the signal gets weak. <a href="#r1" aria-label="Back">&#8617;</a></li>
-    <li id="fn2">The idea is from the late 1960s: Bishnu Atal and Manfred Schroeder at Bell Labs, and Fumitada Itakura and Shuzo Saito at NTT in Japan. The arithmetic that turns sound into throat shapes is Norman Levinson&rsquo;s from 1947, improved by James Durbin in 1960, and for a 10-section throat it turns a summary of the sound into throat shapes in about a hundred multiplications. <a href="#r2" aria-label="Back">&#8617;</a></li>
-    <li id="fn3">All of it runs in your browser, in about 1,800 lines of our own JavaScript, with no audio libraries. <a href="https://github.com/" id="repoLink">The code is on GitHub</a>. <a href="#r3" aria-label="Back">&#8617;</a></li>
-    <li id="fn4">The three voices you can borrow were made with Google&rsquo;s Gemini text-to-speech. <a href="#r4" aria-label="Back">&#8617;</a></li>
-    <li id="fn5">Ours works like LPC-10, a US standard from 1984 that sent 54 bits every 22.5 ms, which is 2,400 bits a second. Secure phones such as the STU-III used it. Phones today keep the throat but choose a better buzz. Every 5 ms they try out patterns of pulses, short ticks like our clicks, and send the pattern that comes closest to the voice when played through the throat. That method is ACELP, the heart of AMR. We don&rsquo;t build it, which is why ours sounds robotic. <a href="#r5" aria-label="Back">&#8617;</a></li>
-    <li id="fn6">Whispering on the phone works for the same reason. A whisper is your own throat with the vocal folds held slightly apart so they cannot buzz, which leaves the hiss as all there is. <a href="#r6" aria-label="Back">&#8617;</a></li>
-    <li id="fn7">&ldquo;Local Forecast &ndash; Elevator&rdquo; by Kevin MacLeod (<a href="https://incompetech.com">incompetech.com</a>), licensed under <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0</a>. We play the first 14 seconds, mixed to one channel at phone quality, and the versions through the phone are our own changes to it. <a href="#r7" aria-label="Back">&#8617;</a></li>
-    <li id="fn8">EVS, agreed in 2014 and used on many 4G and 5G calls since 2016, notices when it is being sent music and switches to a method built for it. <a href="#r8" aria-label="Back">&#8617;</a></li>
+    <li id="fn1">The US Space Force has kept about 31 GPS satellites working in recent years, spread over six orbits, each going round in just under 12 hours. Phones also listen to Europe&rsquo;s Galileo, Russia&rsquo;s GLONASS and China&rsquo;s BeiDou, which work the same way. <a href="#r1" aria-label="Back">&#8617;</a></li>
+    <li id="fn2">The US government says phones are typically accurate to within 4.9 metres under open sky. Every number on this page is worked out in your browser by about 900 lines of our own JavaScript, with no libraries. <a href="https://github.com/" id="repoLink">The code is on GitHub</a>. <a href="#r2" aria-label="Back">&#8617;</a></li>
+    <li id="fn3">The satellites carry atomic clocks, and even those need care: because gravity is weaker up there and they move fast, they would run about 38 millionths of a second a day fast compared with clocks on the ground. So before launch they are set to tick slightly slow, 10.22999999543 MHz instead of 10.23 MHz, and Einstein does the rest. <a href="#r3" aria-label="Back">&#8617;</a></li>
+    <li id="fn4">This is Gauss&ndash;Newton least squares, the standard way receivers do it. Starting from the centre of the Earth is a common first guess when the phone has no idea where it is, and it still gets there in about five steps. Real phones usually start from their last answer, or from the nearest phone mast. <a href="#r4" aria-label="Back">&#8617;</a></li>
+    <li id="fn5">We turn the sky about seventy times faster than real life. Each satellite also sends a description of its orbit, but only at 50 bits a second, so the full set takes 12.5 minutes to hear. That&rsquo;s why your phone downloads it from the internet instead (&ldquo;assisted GPS&rdquo;), and why a dot can take a while to appear in the middle of nowhere. <a href="#r5" aria-label="Back">&#8617;</a></li>
+    <li id="fn6">This is called 3D-mapping-aided positioning. Android phones began using it in some big cities in 2020. A related method, shadow matching, uses which satellites seem to be hidden behind buildings, the shadows they cast in the radio sky. <a href="#r6" aria-label="Back">&#8617;</a></li>
   </ol>
 </section>
 
 </main>
 
 <footer>
-  <p>The throat in your phone. <a href="https://github.com/" class="repo">Read the code</a>.</p>
+  <p>Nobody up there knows where you are. <a href="https://github.com/" class="repo">Read the code</a>.</p>
 </footer>
 
 <script src="../links.js"></script>
