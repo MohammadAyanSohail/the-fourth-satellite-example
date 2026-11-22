@@ -6,9 +6,11 @@ import { fix } from './receiver.js';
 import { fitCanvas, ring, satellite, blueDot, grabRing, draggable, magnifier, loop } from './draw.js';
 import { palette as P } from './theme.js';
 import { spaceView, NAMES, middleOf, keepIn } from './space.js';
-import { fmtKm, setHTML } from './ui.js';
+import { fmtKm, fmtDist, setHTML } from './ui.js';
 
 const FIND_TIME = 1.6;  // seconds the "let the phone find it" glide takes
+const SNAP = 60e3;      // metres; let go of the slider this close to the answer and it snaps on
+const MEET = 1e3;       // metres; the rings count as meeting only this close to the answer
 
 export function init(root) {
   const $ = (id) => root.querySelector(`#${id}`);
@@ -18,8 +20,20 @@ export function init(root) {
   let you = [1.5e6, 1e6], clockErr = +clockSlider.value / 1000, shrink = 0, useThird = true;
   let glide = null;   // { from, to, start } while the phone is finding the amount itself
 
+  // What the phone hears, and what it works out when it solves for the clock itself.
+  function listen() {
+    const used = useThird ? sats : sats.slice(0, 2);
+    const heard = used.map((pos) => ({ pos, took: dist(pos, you) / C + clockErr }));
+    return { used, heard, solved: fix(heard, { solveClock: true, start: middleOf(used) }) };   // fails with only two
+  }
+
   clockSlider.addEventListener('input', () => { clockErr = +clockSlider.value / 1000; shrink = 0; glide = null; });
   shrinkSlider.addEventListener('input', () => { shrink = +shrinkSlider.value * 1000; glide = null; });
+  // The slider moves 10 km a step, too coarse to land on the answer by hand, so close enough snaps on.
+  shrinkSlider.addEventListener('change', () => {
+    const { solved } = listen();
+    if (solved.ok && Math.abs(shrink - solved.bias) < SNAP) shrink = solved.bias;
+  });
   thirdBtn.addEventListener('click', () => {
     useThird = !useThird;
     thirdBtn.setAttribute('aria-pressed', String(useThird));
@@ -29,11 +43,8 @@ export function init(root) {
   function draw(now) {
     const { g, w, h } = fitCanvas(cv);
     const v = spaceView(w, h);
-    const used = useThird ? sats : sats.slice(0, 2);
-
     // What the phone measures: the real travel time plus however fast its clock is.
-    const heard = used.map((pos) => ({ pos, took: dist(pos, you) / C + clockErr }));
-    const solved = fix(heard, { solveClock: true, start: middleOf(used) });   // fails with only two
+    const { used, heard, solved } = listen();
     findBtn.disabled = !solved.ok;
     findBtn.textContent = solved.ok ? 'Let the phone find it' : 'Needs a third satellite';
     if (glide) {
@@ -44,10 +55,11 @@ export function init(root) {
     }
     shrinkSlider.value = Math.round(shrink / 1000);
 
-    // How close the rings are to meeting: the best single spot, and how far it still is from the worst ring.
+    // For the shrink chosen, the phone's best single spot. The rings meet only at the one shrink
+    // amount the phone finds when it solves for the clock itself.
     const best = fix(heard.map((m) => ({ pos: m.pos, took: m.took - shrink / C })), { solveClock: false, start: middleOf(used) });
-    const gap = best.ok ? Math.max(...heard.map((m) => Math.abs(dist(best.pos, m.pos) - (m.took * C - shrink)))) : Infinity;
-    const met = useThird && gap < 40e3;
+    const met = useThird && solved.ok && Math.abs(shrink - solved.bias) < MEET;
+    const off = best.ok ? dist(best.pos, you) : Infinity;
 
     // Everything near you, drawn with whichever View it's given: the whole picture or the magnifier.
     function scene(view, dotSize) {
@@ -60,6 +72,10 @@ export function init(root) {
         }
         g.globalAlpha = 1;
       }
+      // Faint dashed rings: the true distances, which the phone can't see. Shrinking right lands on them.
+      g.setLineDash([3, 6]); g.strokeStyle = P.violet; g.lineWidth = 1.5; g.globalAlpha = 0.5;
+      for (const m of heard) { const [x, y] = view.px(m.pos); ring(g, x, y, dist(m.pos, you) / view.mpp); g.stroke(); }
+      g.setLineDash([]); g.globalAlpha = 1;
       for (const m of heard) {
         const [x, y] = view.px(m.pos);
         ring(g, x, y, (m.took * C - shrink) / view.mpp); g.strokeStyle = P.violet; g.lineWidth = 2.5; g.stroke();
@@ -88,17 +104,16 @@ export function init(root) {
 
     $('clockOut').textContent = `${(clockErr * 1000).toFixed(0)} ms fast`;
     $('shrinkOut').textContent = fmtKm(shrink);
+    const tooBig = solved.ok && shrink < solved.bias;
     setHTML($('clockLive'), !useThird
       ? 'With only A and B, <b>every</b> shrink amount gives a place where the rings cross. That’s the dotted trail. The phone has no way to choose, so it needs one more satellite.'
       : met
-        ? `All three rings meet at a shrink of <b>${fmtKm(shrink)}</b>. That amount <b>is</b> the clock error: ${fmtKm(shrink)} ÷ 300,000 km/s = <b>${((shrink / C) * 1000).toFixed(0)} ms fast</b>.`
-        : `The three crossings (lime) don’t line up yet: they’re about <b>${fmtKm(gap)}</b> from meeting. Only one shrink amount makes them meet.`);
+        ? `All three rings meet at a shrink of <b>${fmtKm(shrink)}</b>, right where you are. That amount <b>is</b> the clock error: ${fmtKm(shrink)} ÷ 300,000 km/s = <b>${((shrink / C) * 1000).toFixed(0)} ms fast</b>.`
+        : `${tooBig ? 'The rings are still <b>too big</b>: shrink them more.' : 'The rings are now <b>too small</b>: shrink them less.'} The three crossings (lime, close up in the magnifier) don’t meet, and the phone’s best guess is <b>${fmtDist(off)}</b> from you.`);
   }
 
   findBtn.addEventListener('click', () => {
-    const used = useThird ? sats : sats.slice(0, 2);
-    const heard = used.map((pos) => ({ pos, took: dist(pos, you) / C + clockErr }));
-    const solved = fix(heard, { solveClock: true, start: middleOf(used) });
+    const { solved } = listen();
     if (solved.ok) glide = { from: shrink, to: solved.bias, start: performance.now() };
   });
   return loop(draw);

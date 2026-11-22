@@ -10,12 +10,14 @@ An interactive explainer of how GPS works, in five steps (timing, circles, clock
   - `js/receiver.js`: Gauss–Newton solver `fix()` and `spread()` (dilution of precision).
   - `js/space.js`, `geo.js`, `draw.js`, `ui.js`, `theme.js`: shared map, geometry, drawing, UI and theme helpers.
 - `tests/receiver.test.mjs`: tests for the receiver and step 5, on Node's built-in runner. Run `node --test` from the repo root.
+- `.github/workflows/pages.yml`: every push to `main` deploys the site to GitHub Pages.
 - `links.js` (repo root): the repo and live-site URLs the pages link to.
 - `submission/README.md`: detailed design notes, how it works, and what was simplified.
 
 ## Conventions
 
-- Everything shown (distances, rings, dots, captions) is computed live. The receiver never sees the user's true position. Anything exaggerated or simplified must say so on screen.
+- Everything shown (distances, rings, dots, captions) is computed live. The receiver never sees the user's true position; the page uses it only to draw you, step 3's faint true-distance rings, and how far off the dot is. Anything exaggerated or simplified must say so on screen.
 - Keep text short: no more than three sentences in any block.
-- Colour roles: blue is you, violet is satellites and signals, acid lime marks draggable or "going wrong" things, and is also the page's highlight colour (call-to-action button, "Try" badges, eyebrow, footnotes, bold live-caption words, focus outline). One exception: step 5 draws straight signals in blue so they stand out from bounced (lime) and blocked (muted) ones.
+- Write live captions with `setHTML()` from `js/ui.js`, not `innerHTML`: the steps redraw every frame, and it only touches the caption when the text changes.
+- Colour roles: blue is you, violet is satellites and signals, acid lime marks draggable or "going wrong" things, including unsettled answers (ring crossings in steps 2 and 3, step 3's trail). It also circles you when step 1's message arrives, and is the page's highlight colour (call-to-action button, "Try" badges, eyebrow, footnotes, bold live-caption words, focus outline). One exception: step 5 draws straight signals in blue so they stand out from bounced (lime) and blocked (muted) ones.
 - Keep the existing coding style and the plain no-build setup.

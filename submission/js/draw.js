@@ -67,7 +67,7 @@ export function magnifier(g, v, center, zoom, x, y, R, drawInside) {
   g.translate(x - R, y - R);
   drawInside(zv);
   g.restore();
-  ring(g, x, y, R); g.strokeStyle = P.accent; g.lineWidth = 2; g.stroke();
+  ring(g, x, y, R); g.strokeStyle = P.muted; g.lineWidth = 2; g.stroke();
   label(g, `${zoom}× closer`, x, y + R + 14, { size: 12, color: P.muted, weight: 500 });
 }
 
