@@ -45,8 +45,8 @@ export function fix(heard, { solveClock = true, start = START, maxSteps = 12 } =
 }
 
 // How far the answer would wander, in metres, if every distance were off by RANGE_NOISE.
-// It depends only on where the satellites are in the sky, and is the phone's pale circle.
-export function spread(heard, pos, solveClock = true) {
+// It depends only on where the satellites are in the sky. It is where the pale circle comes from.
+export function spread(heard, pos, solveClock = true, noise = RANGE_NOISE) {
   const n = solveClock ? 3 : 2;
   const HtH = Array.from({ length: n }, () => new Array(n).fill(0));
   for (const s of heard) {
@@ -55,6 +55,6 @@ export function spread(heard, pos, solveClock = true) {
   }
   const P = inverse(HtH);
   if (!P) return null;
-  const v = RANGE_NOISE * RANGE_NOISE;
+  const v = noise * noise;
   return [[P[0][0] * v, P[0][1] * v], [P[1][0] * v, P[1][1] * v]];
 }

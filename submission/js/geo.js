@@ -65,3 +65,14 @@ export function gaussian(rng) {
   const u = Math.max(1e-12, rng()), v = rng();
   return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
 }
+
+// Where two circles cross: none, or two points. Used to show the two places you could be
+// when you've heard only two satellites.
+export function circleMeet(c1, r1, c2, r2) {
+  const d = dist(c1, c2);
+  if (d === 0 || d > r1 + r2 || d < Math.abs(r1 - r2)) return [];
+  const a = (r1 * r1 - r2 * r2 + d * d) / (2 * d);
+  const h = Math.sqrt(Math.max(0, r1 * r1 - a * a));
+  const u = mul(sub(c2, c1), 1 / d), m = add(c1, mul(u, a));
+  return [add(m, [-u[1] * h, u[0] * h]), add(m, [u[1] * h, -u[0] * h])];
+}

@@ -2,92 +2,98 @@
 
 This is the example project for the Global Virtual Hackathon 2026, made by the organisers to show the kind of complete entry we hope to see. It isn't competing. "Where this falls short" near the end says what a winning entry would do better.
 
-Most people think a satellite tells their phone where they are. It doesn't. No satellite knows you exist. About thirty GPS satellites, 20,200 km up, keep announcing which satellite they are, where they are and what time it is. Your phone only listens. A message that took 0.07 seconds to arrive came from 21,000 km away, and with enough of those distances there is only one place you can be standing. The catch is that your phone's clock is nowhere near good enough to time them, so it has to work out its own clock error at the same time, and that is why it needs one more satellite than you'd think. This site is a working version of that sum, running in the browser.
+Most people think a satellite tells their phone where they are. It doesn't. No satellite knows you exist. The satellites only repeat who they are, where they are and what time it is. Your phone times how late each message arrives and works out the blue dot by itself. The site explains how in five short steps. Each step has one idea, one thing to play with, and one everyday analogy.
 
 ## What you can do with it
 
-### Sheet 1: where the blue dot comes from
+| Step | The idea | What you play with | Analogy |
+|---|---|---|---|
+| 1. Timing | A delay is a distance | Move a satellite from overhead to the horizon and watch its timed message travel down (slowed 30×), with a stopwatch | Counting between lightning and thunder |
+| 2. Circles | One distance is a ring; three rings meet in one spot | Switch satellites on one at a time, drag yourself around | A friend texting "I'm 5 km from the station" |
+| 3. Clock | The phone's clock is wrong, so every ring is too big by the same amount | Make the clock fast, see the phone's wrong guess, then press a button and watch the rings shrink together until they meet | A watch that's 5 minutes fast |
+| 4. Wobble | Where the satellites sit decides the size of the pale circle | Spread the satellites out or bunch them together, or drag them, and watch the cloud of answers | Two torch beams crossing |
+| 5. City | Buildings block and bounce signals, so the dot wanders | Change building height and where you stand, pause the sky, and turn on a 3D city map | A shout bouncing off a wall |
 
-Ten satellites go round the Earth, drawn to scale. Around every satellite your phone can hear is a circle as big as the distance its signal says it travelled, and you are where they meet. You can drag satellites along their orbit, switch them off, or drag yourself around the Earth, and watch the circles and the dot follow. You can set the phone's clock wrong by a millionth, a thousandth or a hundredth of a second, then flip a switch between trusting the clock and working it out. A close-up redraws itself at whatever zoom fits the error, from 60 m to 40,000 km across, with the blue dot, the pale shape around it, and the answers the phone would give over many seconds. A table lists what each satellite's signal took and what distance that means, and a button steps through the phone's guesses one at a time, starting from the centre of the Earth.
+After the steps there is a five-line recap, three surprising facts, and a collapsed "What we simplified, and sources" box.
 
-### Sheet 2: why the dot wanders downtown
+The page starts in a dark space theme and has a light/dark switch in the top bar. The choice is remembered. The top bar also links to each step, lights up the step you're reading, and shows how far down the page you are.
 
-A street seen end on, with glass buildings on both sides. As the sky turns, each satellite's signal is drawn as it reaches you: straight, bounced off the glass opposite, or blocked. Next to it is the map your phone would show, with a trail of where the dot has been. You can change how tall the buildings are, move where you stand, and switch between using every signal and checking them against a 3D city map first.
+### Design rules we followed
+
+- **No walls of text.** Each step has a one-sentence big idea, one analogy card, two or three "Try" prompts and a live caption that changes as you play. Nothing on the page is longer than three sentences.
+- **Every animation shows something real.** The message in step 1 moves at a real speed, slowed by a stated amount. The shrinking rings in step 3 shrink by exactly the clock error the receiver found. The dots in step 4 are real answers from the receiver. Anything exaggerated says so on screen.
+- **Two colours and an odd accent.** Blue is you and the dot. Violet is satellites and their signals. Acid lime marks anything you can drag, and anything going wrong: bounced signals and the phone's bad guess.
 
 ## How it works
 
-The world is a flat slice through the middle of the Earth. Positions are in metres from the Earth's centre. Each satellite is on a circle 26,560 km from the centre and goes round once every 11 h 58 min, sped up on the page so one orbit takes four minutes. A satellite can be heard if it is at least 5° above your horizon and you haven't switched it off.
+Steps 2 to 4 share a flat "map of space" (`js/space.js`). You are near the middle, and the satellites are about 20,000 km away. Positions are in metres.
 
-For each satellite it can hear, the phone gets two things: where the satellite is, and how long its signal took by the phone's own clock. That time is the real travel time, plus noise of about 1.5 m (in distance), plus the phone's clock error. Multiplying by the speed of light gives a distance that is wrong by the same amount for every satellite. GPS engineers call it a pseudorange.
+For each satellite it hears, the phone gets two things: where the satellite is, and how long its signal took by the phone's own clock. That time is the real travel time, plus any clock error, plus (in step 4) some wobble. Multiplied by the speed of light, it gives a distance.
 
-The receiver, `fix()` in `js/receiver.js`, solves for three unknowns: x, y, and the clock error. It uses Gauss–Newton least squares:
+The receiver, `fix()` in `js/receiver.js`, works out x, y and the clock error with Gauss–Newton least squares:
 
-1. Guess. The first guess is the centre of the Earth with a perfect clock.
+1. Guess. Steps 2 to 4 start in the middle of the satellites, and step 5 starts in the middle of the street.
 2. Work out how long each signal would have taken if the guess were right.
-3. Compare with what was measured. For each satellite, note which way moving the guess would change that time.
-4. Solve a 3×3 set of equations for the move that best shrinks all the differences at once, and take it.
-5. Repeat until the move is under a millimetre. It takes about five steps.
+3. Compare that with what was measured.
+4. Solve a small set of equations for the move that best shrinks all the differences at once, and take it.
+5. Repeat until the move is under a millimetre.
 
-With the clock switch on "trust the phone's clock", the same code solves for just x and y and leaves the clock error in the distances, which is why the dot lands hundreds of kilometres away.
+Step 3 runs `fix()` twice: once trusting the clock (solving only x and y), which gives the phone's wrong guess, and once working out the clock too. The animation then shrinks every ring by the clock error that second answer found.
 
-The pale shape around the dot comes from `spread()`. It inverts the same matrix the solver used to find how much the answer moves for a metre of error in each distance (GPS engineers call this dilution of precision), and scales it by the noise. It gets long and thin when the satellites you hear are bunched together, and it is usually taller than it is wide, because every satellite you can hear is above you.
+The pale circle in step 4 comes from `spread()`, which inverts the same matrix the solver uses. That shows how much the answer moves for each metre of error in a distance (GPS engineers call this dilution of precision). The circle's radius is the square root of the x and y variances added together, the measure phones themselves use.
 
-On Sheet 2 the satellites are so far away that their signals arrive as parallel lines. `signalPath()` in `js/canyon.js` decides, for each satellite, whether the line from you to it clears the roof on its side. If not, it checks for a single bounce off the glass wall opposite, which adds `2 × (your distance from that wall) × cos(elevation)` metres to the trip. Anything else is blocked. The same `fix()` then solves for across-the-street position, height and clock. With the city-map switch on, the phone tries every spot across the street 25 cm apart, predicts how long every signal should take from there with its map (bounces included), and keeps the spot where the predictions fit best after the common clock error is taken out.
+In step 5 the satellites are so far away that their signals arrive as parallel lines. `signalPath()` in `js/step5-city.js` checks whether each signal clears the roof on its side. If it doesn't, it checks for one bounce off the glass opposite, which adds `2 × (your distance from that wall) × cos(elevation)` metres. Anything else is blocked. With the 3D city map on, `mapCheck()` tries every spot across the street, predicts each signal's delay from there (bounces included), and keeps the spot that fits best.
 
 ### What is computed and what is drawn by hand
 
-Every position, distance, clock error, pale shape and message on both sheets is computed by the code as it runs. The receiver is only given satellite positions and travel times. It never sees where you really are. The page uses your true position only to say how far off the dot is and to draw you.
+Every distance, delay, ring, guess, dot, pale circle and caption is computed as you play. The receiver is only given satellite positions and signal times. It never sees where you really are. The page uses your true position only to draw you and to say how far off the dot is.
 
-Three things are decoration. The strip at the top is not to scale, and the time in it is your computer's clock. The dots moving along the lines in Fig. 1 don't travel at any real speed. The figure of a person and the street names are drawings.
+Decoration: the orbiting satellites and the breathing dot at the top of the page, the stars, the satellite and person icons, and the windows on the buildings.
 
 ## What we simplified
 
-The world is flat. A real phone solves for x, y, z and the clock, so it needs four satellites. Ours lives in a slice of the Earth, so it needs three. All ten satellites are on one circle, and we picked ten so that a few are always in view. A real sky is full of satellites going different ways.
-
-The distances are made up. Each one is the true distance plus noise we chose, so the pale shape always matches the spread of the dots exactly. A real phone has to estimate its own noise.
-
-Nothing slows the signal. In real life the upper atmosphere delays it by several metres, more by day than by night. We also ignore the Earth turning while the signal travels, and the satellites' orbits are perfect circles whose positions the phone knows exactly.
-
-The street has flat walls, one bounce at most, and a receiver that always picks the straight signal when both arrive. Real reflections blur together with the straight signal. Our city map is perfect, and our phone knows its height and which street it's in, so the map check works far better here than in a real city.
+- **The world is flat in steps 2 to 4.** A real phone solves for x, y, height and the clock, so it needs four satellites. Ours needs three. Step 3 says this on screen.
+- **Step 1 is not to scale.** The arc the satellite sits on is a drawing, but the distance and delay come from the real geometry of an orbit 20,200 km up.
+- **Step 4's wobble is about 500,000 times too big,** so you can see it. The page says so.
+- **Nothing slows the signal down.** In real life the upper atmosphere adds a few metres. The orbits are perfect circles whose positions the phone knows exactly.
+- **Step 5 has flat walls, one bounce at most, and a perfect city map.** The map check works better here than in a real city, and the sky turns about 140 times faster than real life.
 
 ## Where this falls short
 
 ### You never see how the phone measures the time
 
-The whole page rests on "the signal took 71.714 ms". That is the hard part, and we skip it. A GPS signal arrives far weaker than the noise around it. The phone finds it by sliding a copy of the satellite's known pattern of 1,023 on-off chips, which repeats every millisecond, against what the antenna picks up, until they line up. Our distances come straight from the true distance plus noise. A winning entry would let the visitor slide the pattern themselves and watch a match rise out of the noise.
+Every step rests on "the signal took 69.6 ms", and that's the hard part. A GPS signal arrives weaker than the noise around it. The phone finds it by sliding a copy of the satellite's known pattern of 1,023 on-off chips against what the antenna picks up until they line up. Our times come from the true distance plus noise. A winning entry would let the visitor slide the pattern themselves and watch the match rise out of the noise.
 
-### The code doesn't prove the receiver works from the measurements alone
+### There are no tests
 
-`fix()` is only given satellite positions and travel times, and it is careful not to look at anything else. But nothing enforces that, and there are no tests. A winning entry would test the receiver against known answers: the exact position when there is no noise, the clock error recovered to the nanosecond, a refusal when there are too few satellites, and the same answer from any starting guess.
+`fix()` is careful only to use positions and times, but nothing enforces that. A winning entry would test the receiver against known answers: the exact position when there's no noise, the clock error recovered to the nanosecond, a refusal when there are too few satellites, and the same answer from different first guesses.
 
-### The world is flat
+### The fourth satellite is only described
 
-The flat slice makes the pictures clear, but it loses the step most people stumble on, which is that the real thing needs four satellites, not three. A winning entry would have a 3D globe, or at least a second view that shows why the fourth is needed.
+Step 3 tells you a real phone needs four satellites, but you never see why, because the picture is flat. A winning entry would add a small 3D view at the end.
 
 ### Smaller problems
 
-- On Sheet 2 the sky turns about seventy times faster than real life, which makes the dot jump more often than it really would.
-- The side view draws the dot's height even when it is far above the street, clamped to the edge of the picture.
+- With the satellites bunched up in step 4, the cloud of answers is long and thin but the pale circle is round. Phones draw a circle too, but an ellipse would be more honest.
 - `mapCheck()` is exported only so we could test it from the command line.
 
 ## Things we didn't make ourselves
 
 | What | Where it's used | Why we chose it |
 |---|---|---|
-| The HTML canvas, built into browsers | All the drawings | It draws anything we can describe in code, with nothing to install. |
-| Fraunces, Source Serif 4 and IBM Plex Mono, from Google Fonts | The type | A serif for reading, and a typewriter face for the numbers, to suit a field guide. |
+| The HTML canvas, built into browsers | All the interactive pictures | It draws anything we can describe in code, with nothing to install. |
+| Space Grotesk, Inter and JetBrains Mono, from Google Fonts | The type | A slightly spacey display face, a plain one for reading, and a monospace face for the numbers. |
 
-Everything else, including the solver, the orbits and the street, is our own code.
+Everything else, including the receiver, the orbits, the street and the theme switch, is our own code.
 
 ## Sources for the facts on the page
 
-- GPS constellation size, orbit height of 20,200 km, six orbital planes and an orbit of just under 12 hours: GPS.gov, "Space segment", <https://www.gps.gov/systems/gps/space/>.
+- About 31 GPS satellites, 20,200 km up, in six orbits of just under 12 hours: GPS.gov, "Space segment", <https://www.gps.gov/systems/gps/space/>.
 - Phones "typically accurate to within a 4.9 m (16 ft.) radius under open sky": GPS.gov, "GPS accuracy", <https://www.gps.gov/systems/gps/performance/accuracy/>.
 - Satellite clocks 38 µs a day fast without correction, and the 10.22999999543 MHz setting: N. Ashby, "Relativity in the Global Positioning System", *Living Reviews in Relativity* 6, 2003.
-- The navigation message at 50 bit/s, 25 pages of 30 seconds (12.5 minutes) for the full almanac, and the 1,023-chip code repeating every millisecond: the GPS interface specification IS-GPS-200, <https://www.gps.gov/technical/icwg/>.
-- Pseudoranges, least squares and dilution of precision: P. Misra and P. Enge, *Global Positioning System: Signals, Measurements, and Performance*, 2nd ed., Ganga-Jamuna Press, 2006.
-- 3D-mapping-aided positioning on Android from 2020: F. van Diggelen, "Improving urban GPS accuracy for your app", Android Developers Blog, December 2020. Shadow matching: P. D. Groves, "Shadow matching: a new GNSS positioning technique for urban canyons", *Journal of Navigation* 64(3), 2011.
-- The speed of light, 299,792,458 m/s, exact by definition of the metre since 1983.
+- The navigation message at 50 bit/s, 12.5 minutes for the full almanac, the signal's minimum strength and the 1,023-chip code: the GPS interface specification IS-GPS-200, <https://www.gps.gov/technical/icwg/>.
+- Pseudoranges, least squares and dilution of precision: P. Misra and P. Enge, *Global Positioning System: Signals, Measurements, and Performance*, 2nd ed., 2006.
+- 3D-mapping-aided positioning on Android from 2020: F. van Diggelen, "Improving urban GPS accuracy for your app", Android Developers Blog, December 2020.
 
 ## Running it
 
@@ -101,19 +107,21 @@ Then open <http://localhost:8642/submission/>. Browsers won't load JavaScript mo
 
 ## The code
 
-There are about 900 lines of JavaScript, with no libraries.
+There are about 770 lines of JavaScript, with no libraries. Each step has its own file, so you can explain one step without reading the others.
 
 | File | What's in it |
 |---|---|
-| `js/geo.js` | The speed of light and the sizes of things, small vector helpers, a linear solver, seeded noise |
-| `js/receiver.js` | The receiver: `fix()`, which turns travel times into a position and a clock error, and `spread()`, the pale shape |
-| `js/sky.js` | Sheet 1's world: the satellites, their orbit, your horizon and what each signal took |
-| `js/canyon.js` | Sheet 2: signal paths in the street, bounces, and the city-map check |
-| `js/viz.js` | Every drawing: the strip, Fig. 1 to Fig. 4 |
-| `js/app.js`, `js/ui.js` | Sheet 1's controls and the shared switch, play button and number formats |
+| `js/app.js` | Starts everything: the theme, the five steps, the navigation bar. Each step only animates while it's on screen. |
+| `js/theme.js` | Light and dark mode, and the colours the canvases borrow from the CSS |
+| `js/geo.js` | The speed of light and the sizes of things, small vector helpers, a linear solver, seeded noise, where two circles cross |
+| `js/receiver.js` | The receiver: `fix()` turns signal times into a position and a clock error, and `spread()` gives the pale circle |
+| `js/draw.js` | Shared drawing: sizing a canvas, metres to pixels, the blue dot, satellites, dragging, the animation loop |
+| `js/space.js` | The flat map of space shared by steps 2 to 4 |
+| `js/step1-timing.js` … `js/step5-city.js` | One file per step |
+| `js/ui.js` | The on/off switch and number formats |
 
 ## Licences and credits
 
 The code and text are under the MIT licence; see `LICENSE` at the top of the repository.
 
-The fonts are Fraunces by Undercase Type, Source Serif 4 by Frank Grießhammer for Adobe, and IBM Plex Mono by Mike Abbink and Bold Monday for IBM, all under the SIL Open Font License.
+The fonts are Space Grotesk by Florian Karsten, Inter by Rasmus Andersson, and JetBrains Mono by JetBrains, all under the SIL Open Font License.

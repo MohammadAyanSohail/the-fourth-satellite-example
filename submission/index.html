@@ -1,136 +1,300 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nobody up there knows where you are</title>
-<meta name="description" content="No satellite knows where you are. They only say who they are and what time it is, and your phone works out the blue dot from how late each message arrives. Move the satellites, break the phone's clock, and see what happens.">
+<meta name="description" content="How your phone finds the blue dot on the map, in five small steps you can play with.">
+<script>document.documentElement.dataset.theme = localStorage.getItem('blue-dot-theme') || 'dark';</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=IBM+Plex+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 </head>
 <body>
 
-<header class="top">
-  <p class="kicker">A field guide to the blue dot</p>
-  <h1>Nobody up there knows where you are</h1>
-  <p class="lead">
-    The blue dot on your map isn&rsquo;t something a satellite tells your phone. No satellite knows where you are, or that you
-    exist. About thirty of them, 20,200 km up,<a class="fn" href="#fn1" id="r1">1</a> do one thing over and over: they say which
-    satellite they are, where they are, and what time it is by the atomic clock on board. Your phone only listens. From how late
-    each message arrives, it works out where it must be standing, about once a second, usually to within a few metres.<a class="fn" href="#fn2" id="r2">2</a>
-  </p>
+<header class="nav">
+  <a class="brand" href="#top"><span class="brand-dot"></span>The Blue Dot</a>
+  <nav class="nav-steps" aria-label="Steps">
+    <a href="#step1"><span>1</span>Timing</a>
+    <a href="#step2"><span>2</span>Circles</a>
+    <a href="#step3"><span>3</span>Clock</a>
+    <a href="#step4"><span>4</span>Wobble</a>
+    <a href="#step5"><span>5</span>City</a>
+  </nav>
+  <button type="button" class="theme" id="themeToggle" aria-pressed="false" aria-label="Switch to light mode">
+    <span class="theme-track"><span class="theme-knob"></span></span>
+  </button>
+  <div class="progress"><span id="progress"></span></div>
 </header>
 
-<main>
+<main id="top">
 
-<section class="strip" aria-label="A satellite announcing itself to a phone that only listens">
-  <canvas id="strip" role="img" aria-label="A satellite sending out its name and the time, and a phone listening"></canvas>
+<section class="hero">
+  <div class="hero-text">
+    <p class="eyebrow">How your phone finds you</p>
+    <h1>Nobody up there knows where you are.</h1>
+    <p class="hero-sub">Satellites don&rsquo;t track you. They don&rsquo;t even know you exist. Your phone works out the blue dot all by itself, from a few clocks in space.</p>
+    <p class="hero-sub small">Five small steps. Each one is something you can play with.</p>
+    <a class="cta" href="#step1">Start with step 1 <span aria-hidden="true">&darr;</span></a>
+  </div>
+  <div class="orbit" aria-hidden="true">
+    <div class="orbit-ring r1"><span class="sat"></span></div>
+    <div class="orbit-ring r2"><span class="sat"></span></div>
+    <div class="orbit-ring r3"><span class="sat"></span></div>
+    <span class="hero-dot"></span>
+  </div>
 </section>
 
-<section class="sheet" id="dot">
-  <h2><span class="num">Sheet 1</span> Where the blue dot comes from</h2>
+<section class="facts" aria-label="Three numbers to start with">
+  <div class="fact"><b>~31</b><span>GPS satellites in orbit</span></div>
+  <div class="fact"><b>20,200 km</b><span>how high they fly</span></div>
+  <div class="fact"><b>0</b><span>messages your phone sends them</span></div>
+</section>
 
-  <div class="work">
-    <div class="work-left">
-      <div class="transport">
-        <button class="key" id="play" type="button" aria-label="Pause the sky"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg></button>
-        <div class="switch" id="clockSwitch">
-          <button type="button" class="switch-label" data-side="a">trust the phone&rsquo;s clock</button>
-          <button type="button" class="switch-track" role="switch" aria-checked="true" aria-label="Solve for the phone's clock too"><span class="switch-knob"></span></button>
-          <button type="button" class="switch-label on" data-side="b">work out the clock too</button>
-        </div>
+<!-- Step 1 -->
+<section class="step" id="step1">
+  <header class="step-head">
+    <span class="step-num">1</span>
+    <div>
+      <h2>Satellites just shout the time</h2>
+      <p class="big-idea">Each satellite repeats one message: <em>&ldquo;I&rsquo;m satellite A, I&rsquo;m here, and the time is exactly&hellip;&rdquo;</em> Your phone notes how late it arrives.</p>
+    </div>
+  </header>
+  <div class="step-body">
+    <div class="stage">
+      <canvas id="timingCanvas" role="img" aria-label="A satellite's timed message travelling down to a person with a phone"></canvas>
+      <div class="controls">
+        <label class="slider">Where the satellite is
+          <input type="range" id="elevation" min="5" max="90" value="60">
+          <output id="elevOut"></output>
+        </label>
       </div>
-      <canvas id="sky" tabindex="0" role="img" aria-label="The Earth, the satellites on their orbit, and a circle around each satellite you can hear. Drag a satellite to move it, click it to stop listening, or drag yourself around the Earth. The arrow keys move you."></canvas>
-      <p class="figcap"><span class="fig">Fig. 1.</span> The Earth and the satellites to scale. Around each satellite you can hear is a circle as big as the distance its signal says it travelled. You are wherever the circles meet. <b>Drag</b> a satellite along its orbit, <b>click</b> one to stop listening to it, or drag <b>you</b> around the Earth.</p>
-      <canvas id="close" role="img" aria-label="A close-up of where you stand, with the blue dot, the pale circle around it and the same distance circles"></canvas>
-      <p class="figcap"><span class="fig">Fig. 2.</span> <span id="closeCap"></span> The dots are the answers the phone would give over many seconds, because each measured distance is a few metres off in a different way each time.</p>
-    </div>
-
-    <div class="work-right">
-      <p class="now" id="now" aria-live="polite"></p>
-
-      <div class="how">
-        <p>Radio travels at the speed of light, 300,000 km a second, so a satellite&rsquo;s message takes between about 67 and 86 thousandths of a second to reach you. Your phone compares the time in the message with the time it arrived, and that tells it how far away the satellite is. One distance puts you somewhere on a circle around that satellite. Two circles cross in two places. A third picks one.</p>
-        <p>That only works if your phone&rsquo;s clock is as good as the satellites&rsquo;, and it isn&rsquo;t.<a class="fn" href="#fn3" id="r3">3</a> A clock a millionth of a second out makes every distance 300 metres wrong. So the phone treats its own clock error as one more unknown and uses one more satellite to find it. Every distance is too long by the same amount, and only one amount makes all the circles meet in a point.</p>
+      <div class="readout">
+        <div><span class="k">Stopwatch</span><span class="watch" id="watch">0.0 ms</span></div>
+        <p id="sum"></p>
       </div>
-
-      <p class="choices" id="clockChoices">
-        Set the phone&rsquo;s clock wrong by
-        <span class="nb"><button type="button" data-err="0">nothing</button>,</span>
-        <span class="nb"><button type="button" data-err="0.000001">a millionth of a second</button>,</span>
-        <span class="nb"><button type="button" data-err="0.001">a thousandth</button>,</span>
-        <span class="nb">or <button type="button" data-err="0.01">a hundredth</button>.</span>
-        Then flip the switch above Fig. 1.
-      </p>
-      <div class="ruler" id="ruler" aria-hidden="true"></div>
-      <p class="figcap">How far off a distance comes out for each amount the clock is wrong.</p>
-
-      <h3 class="small-h">What the phone heard this second</h3>
-      <div class="readout" id="heard"></div>
-      <p class="chips-line">Listening to: <span id="satChips"></span></p>
-      <p class="spread" id="spread"></p>
-
-      <h3 class="small-h">How the phone worked it out</h3>
-      <p>The phone can&rsquo;t solve this in one go. It guesses, works out how late each signal would have been if the guess were right, and moves the guess to shrink the difference.<a class="fn" href="#fn4" id="r4">4</a></p>
-      <button type="button" class="btn" id="stepBtn">Watch it, one guess at a time</button>
-      <ol class="steps" id="steps"></ol>
     </div>
+    <aside class="side">
+      <div class="analogy">
+        <p class="analogy-tag">Think of it like&hellip;</p>
+        <p><b>Lightning and thunder.</b> Count the seconds between the flash and the boom and you know how far away the storm is. Your phone does the same with radio, which travels 300,000 km every second.</p>
+      </div>
+      <ul class="try">
+        <li>Slide the satellite down towards the horizon. It&rsquo;s further away, so the message takes longer.</li>
+        <li>Watch the stopwatch. The whole trip takes less than a tenth of a second.</li>
+      </ul>
+    </aside>
   </div>
 </section>
 
-<section class="sheet" id="street-sheet">
-  <h2><span class="num">Sheet 2</span> Why the dot wanders downtown</h2>
-  <p class="sheet-lead">
-    Everything on Sheet 1 assumes each signal comes straight from the satellite. Between tall buildings, many don&rsquo;t. This is
-    a street seen end on, with glass on both sides. Stand still and let the sky turn: the satellites move,<a class="fn" href="#fn5" id="r5">5</a> different signals get blocked or bounce, and the dot on the map wanders even though you haven&rsquo;t moved.
-  </p>
-  <div class="street">
-    <div class="street-side">
-      <canvas id="street" role="img" aria-label="A street between two glass buildings, with the path of each satellite's signal: straight, bounced off a wall, or blocked. Click or drag to move where you stand."></canvas>
-      <p class="figcap"><span class="fig">Fig. 3.</span> <span class="k direct">Blue</span>: straight from the satellite. <span class="k bounce">Orange</span>: bounced off the glass opposite, so it took the long way round. <span class="k blocked">Grey</span>: blocked. Click the street to move where you stand.</p>
+<!-- Step 2 -->
+<section class="step" id="step2">
+  <header class="step-head">
+    <span class="step-num">2</span>
+    <div>
+      <h2>One distance draws a circle</h2>
+      <p class="big-idea">Knowing you&rsquo;re 21,000 km from a satellite doesn&rsquo;t say <em>where</em> you are. It only says how far.</p>
     </div>
-    <div class="street-map">
-      <canvas id="streetMap" role="img" aria-label="The map your phone shows, with the blue dot and the trail of where it has been"></canvas>
-      <p class="figcap"><span class="fig">Fig. 4.</span> Your phone&rsquo;s map. The fading trail is where the dot has been.</p>
+  </header>
+  <div class="step-body">
+    <div class="stage">
+      <canvas id="circlesCanvas" class="grab" role="img" aria-label="Satellites with a ring around each one you listen to. Drag yourself to move."></canvas>
+      <div class="controls">
+        <span class="controls-label">Listen to</span>
+        <button type="button" class="chip" data-sat="0" aria-pressed="true">Satellite A</button>
+        <button type="button" class="chip" data-sat="1" aria-pressed="false">Satellite B</button>
+        <button type="button" class="chip" data-sat="2" aria-pressed="false">Satellite C</button>
+      </div>
+      <p class="live" id="circlesLive" aria-live="polite"></p>
     </div>
-  </div>
-  <div class="street-bar">
-    <button type="button" class="key" id="streetPlay" aria-label="Pause the sky over the street"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg></button>
-    <label class="range">How tall the buildings are <input type="range" id="height" min="1" max="90" step="1" value="40"> <output id="heightOut"></output></label>
-    <label class="range">Where you stand <input type="range" id="where" min="1" max="21" step="0.5" value="6"></label>
-    <div class="switch" id="mapSwitch">
-      <button type="button" class="switch-label on" data-side="a">use every signal</button>
-      <button type="button" class="switch-track" role="switch" aria-checked="false" aria-label="Check signals against a city map"><span class="switch-knob"></span></button>
-      <button type="button" class="switch-label" data-side="b">check a city map first</button>
-    </div>
-  </div>
-  <p class="now" id="streetNow" aria-live="polite"></p>
-  <div class="explain">
-    <p>A bounced signal arrives late, because it went to the far wall and back. The phone can&rsquo;t tell it bounced. It only sees a satellite that seems further away than it is, and it pushes your dot away from that satellite to make the circles meet. A signal that bounced off the building on your left came from a satellite on your right, so the dot slides left, often into the building.</p>
-    <p>The obvious fix is to ignore satellites low in the sky, but they are the ones that tell left from right. With only the satellites straight overhead, the circles cross at a shallow angle and the pale circle grows wide across the street. Make the buildings taller and watch both problems get worse together.</p>
-    <p>Newer phones use a 3D map of the city instead.<a class="fn" href="#fn6" id="r6">6</a> The phone already knows it&rsquo;s at street level and roughly which street it&rsquo;s in. So it tries standing at each spot across the street, uses the map to predict how late every signal should be from there, bounces included, and picks the spot where the predictions fit. Flip the switch to try it. Our map is perfect and our walls are flat glass, so it works better here than it does in a real city.</p>
+    <aside class="side">
+      <div class="analogy">
+        <p class="analogy-tag">Think of it like&hellip;</p>
+        <p><b>A friend texting &ldquo;I&rsquo;m 5 km from the station.&rdquo;</b> They could be anywhere on a ring around it. A second friend&rsquo;s ring crosses the first in two places. A third tells you which one.</p>
+      </div>
+      <ul class="try">
+        <li>Turn on the satellites one at a time.</li>
+        <li>Drag yourself around (the dashed ring). The circles follow, and still meet where you are.</li>
+      </ul>
+      <p class="note">This is a flat picture of space, seen from above. The real world is 3D, which adds one more satellite to everything here.</p>
+    </aside>
   </div>
 </section>
 
-<section class="footnotes" id="notes">
-  <h2>Notes</h2>
-  <ol>
-    <li id="fn1">The US Space Force has kept about 31 GPS satellites working in recent years, spread over six orbits, each going round in just under 12 hours. Phones also listen to Europe&rsquo;s Galileo, Russia&rsquo;s GLONASS and China&rsquo;s BeiDou, which work the same way. <a href="#r1" aria-label="Back">&#8617;</a></li>
-    <li id="fn2">The US government says phones are typically accurate to within 4.9 metres under open sky. Every number on this page is worked out in your browser by about 900 lines of our own JavaScript, with no libraries. <a href="https://github.com/" id="repoLink">The code is on GitHub</a>. <a href="#r2" aria-label="Back">&#8617;</a></li>
-    <li id="fn3">The satellites carry atomic clocks, and even those need care: because gravity is weaker up there and they move fast, they would run about 38 millionths of a second a day fast compared with clocks on the ground. So before launch they are set to tick slightly slow, 10.22999999543 MHz instead of 10.23 MHz, and Einstein does the rest. <a href="#r3" aria-label="Back">&#8617;</a></li>
-    <li id="fn4">This is Gauss&ndash;Newton least squares, the standard way receivers do it. Starting from the centre of the Earth is a common first guess when the phone has no idea where it is, and it still gets there in about five steps. Real phones usually start from their last answer, or from the nearest phone mast. <a href="#r4" aria-label="Back">&#8617;</a></li>
-    <li id="fn5">We turn the sky about seventy times faster than real life. Each satellite also sends a description of its orbit, but only at 50 bits a second, so the full set takes 12.5 minutes to hear. That&rsquo;s why your phone downloads it from the internet instead (&ldquo;assisted GPS&rdquo;), and why a dot can take a while to appear in the middle of nowhere. <a href="#r5" aria-label="Back">&#8617;</a></li>
-    <li id="fn6">This is called 3D-mapping-aided positioning. Android phones began using it in some big cities in 2020. A related method, shadow matching, uses which satellites seem to be hidden behind buildings, the shadows they cast in the radio sky. <a href="#r6" aria-label="Back">&#8617;</a></li>
+<!-- Step 3 -->
+<section class="step" id="step3">
+  <header class="step-head">
+    <span class="step-num">3</span>
+    <div>
+      <h2>Your phone&rsquo;s clock is the problem</h2>
+      <p class="big-idea">Radio is so fast that a clock one millionth of a second out puts you 300 m wrong. A phone&rsquo;s clock is far worse than that.</p>
+    </div>
+  </header>
+  <div class="step-body">
+    <div class="stage">
+      <canvas id="clockCanvas" class="grab" role="img" aria-label="Three rings that are all too big because the phone's clock is fast, and the phone's wrong guess"></canvas>
+      <div class="controls">
+        <label class="slider">Phone&rsquo;s clock is
+          <input type="range" id="clockError" min="0" max="20" value="10">
+          <output id="clockOut"></output>
+        </label>
+        <button type="button" class="btn" id="fixClock">Let the phone fix its clock</button>
+      </div>
+      <p class="live" id="clockLive" aria-live="polite"></p>
+    </div>
+    <aside class="side">
+      <div class="analogy">
+        <p class="analogy-tag">Think of it like&hellip;</p>
+        <p><b>A watch that&rsquo;s 5 minutes fast.</b> Every time you check it, you&rsquo;re out by the same 5 minutes. Once you know that, you just take 5 minutes off every answer.</p>
+      </div>
+      <ul class="try">
+        <li>Make the clock fast. Every ring grows by the same amount, and they stop meeting.</li>
+        <li>Press <b>Let the phone fix its clock</b>. All the rings shrink together until they meet in one spot.</li>
+      </ul>
+      <p class="note">That&rsquo;s why a real phone needs <b>4 satellites</b>, not 3: one extra to work out the clock.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- Step 4 -->
+<section class="step" id="step4">
+  <header class="step-head">
+    <span class="step-num">4</span>
+    <div>
+      <h2>Why there&rsquo;s a pale circle</h2>
+      <p class="big-idea">Every measurement is a little off. <em>Where</em> the satellites are decides how much that moves your dot.</p>
+    </div>
+  </header>
+  <div class="step-body">
+    <div class="stage">
+      <canvas id="wobbleCanvas" class="grab" role="img" aria-label="Four satellites, the blue dot jumping about, and a cloud of past answers. Drag the satellites."></canvas>
+      <div class="controls">
+        <button type="button" class="btn" data-layout="spread">Spread them out</button>
+        <button type="button" class="btn ghost" data-layout="bunched">Bunch them together</button>
+      </div>
+      <div class="readout">
+        <div><span class="k">Pale circle</span><span class="watch" id="wobbleSize"></span></div>
+        <div class="meter"><span id="wobbleMeter"></span></div>
+        <p class="live" id="wobbleLive" aria-live="polite"></p>
+      </div>
+    </div>
+    <aside class="side">
+      <div class="analogy">
+        <p class="analogy-tag">Think of it like&hellip;</p>
+        <p><b>Two torch beams.</b> Cross them at a right angle and they meet in a small, sharp spot. Cross them at a shallow angle and they overlap in a long smear. The rings work the same way.</p>
+      </div>
+      <ul class="try">
+        <li>Press <b>Bunch them together</b> and watch the cloud of answers stretch out.</li>
+        <li>Drag one satellite to the far side. The cloud snaps back.</li>
+      </ul>
+      <p class="note">We made every measurement about 500,000&times; shakier than real so you can see it. On a real phone the pale circle is a few metres across.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- Step 5 -->
+<section class="step" id="step5">
+  <header class="step-head">
+    <span class="step-num">5</span>
+    <div>
+      <h2>Downtown, signals bounce</h2>
+      <p class="big-idea">Tall buildings block some satellites and bounce others. A bounced signal took the long way round, so that satellite seems further away than it is.</p>
+    </div>
+  </header>
+  <div class="step-body wide">
+    <div class="stage">
+      <div class="city">
+        <figure>
+          <canvas id="streetCanvas" role="img" aria-label="A street seen end on, with each satellite signal drawn as straight, bounced or blocked"></canvas>
+          <figcaption>The street, seen end on</figcaption>
+        </figure>
+        <figure>
+          <canvas id="mapCanvas" role="img" aria-label="The map on your phone with the blue dot and a trail of where it has been"></canvas>
+          <figcaption>Your map, from above</figcaption>
+        </figure>
+      </div>
+      <div class="legend">
+        <span><i class="k-direct"></i>Straight <b id="nDirect">0</b></span>
+        <span><i class="k-bounce"></i>Bounced <b id="nBounce">0</b></span>
+        <span><i class="k-blocked"></i>Blocked <b id="nBlocked">0</b></span>
+      </div>
+      <div class="controls">
+        <label class="slider">Building height <input type="range" id="height" min="1" max="80" value="40"></label>
+        <label class="slider">Where you stand <input type="range" id="where" min="1" max="21" step="0.5" value="6"></label>
+        <button type="button" class="btn ghost" id="cityPlay" aria-pressed="false">Pause the sky</button>
+        <button type="button" class="switch" id="useMap" aria-pressed="false"><span class="switch-track"><span class="switch-knob"></span></span>Use a 3D city map</button>
+      </div>
+      <p class="live" id="cityLive" aria-live="polite"></p>
+    </div>
+    <aside class="side">
+      <div class="analogy">
+        <p class="analogy-tag">Think of it like&hellip;</p>
+        <p><b>A friend calling your name across a busy street.</b> If the sound bounces off a wall first, it reaches you late and from the wrong side. Your phone gets fooled the same way, and pushes the dot the wrong way.</p>
+      </div>
+      <ul class="try">
+        <li>Raise the buildings. Watch the dot drift, sometimes right into a building.</li>
+        <li>Turn on <b>Use a 3D city map</b>. The phone checks which signals could really have come straight.</li>
+        <li>Drop the buildings to 1 m: open sky, and the dot sits still.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<section class="recap">
+  <h2>The whole trick, in five lines</h2>
+  <ol class="recap-list">
+    <li><span>1</span>Satellites shout the time. Your phone times how late it arrives.</li>
+    <li><span>2</span>Each delay is a distance, and each distance is a ring.</li>
+    <li><span>3</span>The rings meet where you are, once the phone has fixed its own clock.</li>
+    <li><span>4</span>Satellites spread across the sky give a small pale circle.</li>
+    <li><span>5</span>Buildings bounce signals, which is why the dot wanders in cities.</li>
   </ol>
+</section>
+
+<section class="bonus">
+  <h2>Three things that surprise people</h2>
+  <div class="cards">
+    <article class="card">
+      <p class="card-tag">Einstein in your pocket</p>
+      <p>Clocks up there tick faster than clocks down here, by 38 millionths of a second a day. So they&rsquo;re set to run slightly slow before launch.<a class="fn" href="#n3">3</a></p>
+    </article>
+    <article class="card">
+      <p class="card-tag">A 12-minute download</p>
+      <p>Satellites send their orbit details at 50 bits a second. Hearing the full list takes 12.5 minutes, so your phone fetches it from the internet instead.<a class="fn" href="#n4">4</a></p>
+    </article>
+    <article class="card">
+      <p class="card-tag">Quieter than a whisper</p>
+      <p>The signal reaching your phone is weaker than the background noise around it. Your phone finds it by knowing exactly what pattern to listen for.<a class="fn" href="#n4">4</a></p>
+    </article>
+  </div>
+</section>
+
+<section class="fine">
+  <details>
+    <summary>What we simplified, and sources</summary>
+    <ul>
+      <li>Steps 2 to 4 are a flat picture, so 3 satellites do the job that 4 do in the real, 3D world.</li>
+      <li>Step 4&rsquo;s wobble is hugely exaggerated, so you can see it.</li>
+      <li>Step 5 has one bounce at most, flat glass walls and a perfect city map.</li>
+      <li>Nothing slows the signal down on its way (in real life the upper air adds a few metres).</li>
+    </ul>
+    <ol class="sources">
+      <li id="n1">Number of satellites, height and orbits: GPS.gov, &ldquo;Space segment&rdquo;.</li>
+      <li id="n2">Phones are typically accurate to within 4.9 m under open sky: GPS.gov, &ldquo;GPS accuracy&rdquo;.</li>
+      <li id="n3">Clocks 38 &micro;s a day fast, set to 10.22999999543 MHz: N. Ashby, &ldquo;Relativity in the Global Positioning System&rdquo;, <i>Living Reviews in Relativity</i>, 2003.</li>
+      <li id="n4">50 bits a second, 12.5 minutes for the full list, and the signal&rsquo;s strength and pattern: the GPS specification IS-GPS-200.</li>
+      <li id="n5">3D-map-aided positioning on Android from 2020: F. van Diggelen, &ldquo;Improving urban GPS accuracy for your app&rdquo;, Android Developers Blog.</li>
+    </ol>
+    <p>All of it runs in your browser: about 770 lines of our own JavaScript, no libraries. <a href="https://github.com/" id="repoLink">Read the code on GitHub</a>.</p>
+  </details>
 </section>
 
 </main>
 
-<footer>
-  <p>Nobody up there knows where you are. <a href="https://github.com/" class="repo">Read the code</a>.</p>
+<footer class="foot">
+  <p><span class="brand-dot"></span> Nobody up there knows where you are. <a href="https://github.com/" class="repo">Read the code</a>.</p>
 </footer>
 
 <script src="../links.js"></script>

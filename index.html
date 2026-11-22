@@ -145,22 +145,22 @@ footer .in { max-width: 804px; margin: 0 auto; }
     </div>
 
     <span class="label">Tech used</span>
-    <div class="field long">Plain JavaScript, HTML and CSS, with no libraries or build step. All the drawing is on the HTML canvas. The fonts are from Google Fonts. Hosted on GitHub Pages.</div>
+    <div class="field long">Plain JavaScript, HTML and CSS, with no libraries or build step. The interactive pictures use the HTML canvas. Fonts from Google Fonts. Light and dark themes in CSS. Hosted on GitHub Pages.</div>
 
     <span class="label">What your project is about</span>
-    <div class="field long">No satellite knows where you are. About thirty of them keep saying who they are, where they are and what time it is, and your phone works out the blue dot from how late each message arrives. The catch is that a phone's clock is far too poor to time them, so it has to work out its own clock as well. Our site is a working version of that sum. You can drag satellites around, set the phone's clock wrong and watch the dot land hundreds of kilometres away, step through the phone's guesses, and see why the dot wanders between tall glass buildings.</div>
+    <div class="field long">No satellite knows where you are. They only repeat who they are, where they are and what time it is, and your phone works out the blue dot from how late each message arrives. Our site explains how in five short steps, each with one idea, one thing to play with and one everyday analogy: a delay is a distance, distances are rings, a wrong clock makes every ring too big, the satellites' spread sets the pale circle, and tall buildings bounce signals so the dot wanders downtown.</div>
 
     <span class="label">Who is it for?</span>
-    <div class="field long">Anyone from about 13 up who has followed the blue dot on a map and assumed a satellite was watching. You move things and see what happens before you read why, so there's no maths to get through first.</div>
+    <div class="field long">Anyone from about 13 up who has followed the blue dot on a map and assumed a satellite was watching. You play with each idea before reading about it, so there's no maths to get through first.</div>
 
     <span class="label">One-line summary</span>
-    <div class="field long">Move the satellites, break your phone's clock, and see where the blue dot on your map really comes from.</div>
+    <div class="field long">Five small things to play with that show where the blue dot on your map really comes from.</div>
 
     <span class="label">How it works</span>
-    <div class="field long">Each satellite the phone hears gives it two things: where the satellite is, and how long its signal took by the phone's clock. Times the speed of light, that is a distance that's off by the same amount for every satellite, because the phone's clock is wrong. The receiver solves for position and clock error together by Gauss–Newton least squares, starting from the centre of the Earth, and inverts the same matrix to draw the pale shape around the dot. The world is a flat slice of the Earth, so it needs three satellites, not four. In the street, each signal is traced straight, bounced off glass or blocked, and a city-map mode tries every spot across the street to find the best fit. It's about 900 lines of our own JavaScript, running in your browser.</div>
+    <div class="field long">Each satellite the phone hears gives two things: where it is, and how long its signal took by the phone's clock. Times the speed of light, that is a distance, off by the same amount for every satellite because the phone's clock is wrong. Our receiver solves for position and clock error together by Gauss–Newton least squares, and inverts the same matrix for the pale circle. The rings, guesses, shrinking and dots on screen all come straight from it. In the city step, each signal is traced straight, bounced or blocked, and a 3D-map mode tries every spot across the street. Each step is its own small file, about 770 lines of our own JavaScript in all, running in your browser.</div>
 
     <span class="label">Why it matters</span>
-    <div class="field long">Billions of people follow the blue dot every day, and almost nobody knows it comes from timing radio signals to a few billionths of a second, or that the phone has to correct its own clock to do it. Once you've watched the circles fail to meet, everyday things start to make sense: why the dot takes a while to appear in the middle of nowhere, why it jumps into buildings downtown, and why the pale circle grows and shrinks. It's also an idea that turns up all over engineering. When you can't measure something, make it one more unknown and let an extra measurement pin it down.</div>
+    <div class="field long">Billions of people follow the blue dot every day, and almost nobody knows it comes from timing radio signals to a few billionths of a second, or that the phone has to correct its own clock to do it. Once you've watched the rings fail to meet and then shrink together, everyday things make sense: why the dot takes a while in the middle of nowhere, why it jumps into buildings downtown, and why the pale circle grows and shrinks. And the trick turns up all over engineering: when you can't measure something, make it one more unknown.</div>
 
     <span class="label">Demo video <span class="pill pill-wait">Not recorded</span></span>
     <div class="field"><span class="unset">This is a demo project, so no video was recorded. A real submission needs one.</span></div>
