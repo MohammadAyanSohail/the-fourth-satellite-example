@@ -1,7 +1,5 @@
 # Nobody up there knows where you are
 
-This is the example project for the Global Virtual Hackathon 2026, made by the organisers to show the kind of complete entry we hope to see. It isn't competing. "Where this falls short" near the end says what a winning entry would do better.
-
 Most people think a satellite tells their phone where they are. It doesn't. No satellite knows you exist. The satellites only repeat who they are, where they are and what time it is. Your phone times how late each message arrives and works out the blue dot by itself. The site explains how in five short steps. Each step has one idea, one thing to play with, and one everyday analogy.
 
 ## What you can do with it
