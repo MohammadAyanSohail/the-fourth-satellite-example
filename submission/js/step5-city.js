@@ -4,7 +4,7 @@ import { C, dist, mulberry32, gaussian } from './geo.js';
 import { fix, RANGE_NOISE } from './receiver.js';
 import { fitCanvas, View, ring, label, blueDot, person, loop } from './draw.js';
 import { palette as P } from './theme.js';
-import { bindToggle, fmtDist } from './ui.js';
+import { bindToggle, fmtDist, setHTML } from './ui.js';
 
 const W = 22;           // metres from wall to wall
 const HAND = 1.4;       // how high the phone is held
@@ -12,6 +12,8 @@ const FAR = 20200e3;    // satellites are so far away that their signals arrive 
 const DRIFT = 0.02;     // how fast the sky turns on screen, about 140 times real life
 const CLOCK = 2.5e-6;   // the phone's clock is off; it works this out, as in step 3
 const MASK = (5 * Math.PI) / 180;
+const FIX_NEED = 3;     // signals fix() needs: across the street, height and the clock
+const MAP_NEED = 2;     // the map check only compares signals with each other, so it needs two
 // Phones listen to GPS, Galileo, GLONASS and BeiDou together, so a real sky has plenty of satellites.
 const SKY = Array.from({ length: 16 }, (_, i) => [i + 1, (2 * Math.PI * i) / 16 + 0.13 * Math.sin(i * 3.1)]);
 
@@ -70,7 +72,7 @@ export function init(root) {
   const $ = (id) => root.querySelector(`#${id}`);
   const side = $('streetCanvas'), map = $('mapCanvas');
   let px = 6, height = +$('height').value, useMap = false, playing = true;
-  let t = 0, last = 0, lastReading = 0, reading = 0, dotX = null, trail = [];
+  let t = 0, last = 0, lastReading = 0, reading = 0, dotX = null, fixed = false, need = FIX_NEED, trail = [];
 
   $('height').addEventListener('input', (e) => { height = +e.target.value; trail = []; });
   $('where').addEventListener('input', (e) => { px = +e.target.value; trail = []; });
@@ -86,27 +88,35 @@ export function init(root) {
 
     if (now - lastReading > 500) {   // a new answer twice a second
       reading++; lastReading = now;
+      // With no fix the phone keeps its last answer, but it's no longer current: it's drawn faded.
       const heard = sats.filter((m) => m.kind !== 'blocked');
-      if (useMap && heard.length) dotX = mapCheck(heard, hL, hR);
-      else { const r = fix(heard, { start: [W / 2, 0] }); if (r.ok) dotX = r.pos[0]; }
-      if (dotX !== null) { trail.push(dotX); if (trail.length > 30) trail.shift(); }
-      describe(sats);
+      need = useMap ? MAP_NEED : FIX_NEED;
+      let x = null;
+      if (useMap) { if (heard.length >= need) x = mapCheck(heard, hL, hR); }
+      else { const r = fix(heard, { start: [W / 2, 0] }); if (r.ok) x = r.pos[0]; }
+      fixed = x !== null;
+      if (fixed) { dotX = x; trail.push(dotX); if (trail.length > 30) trail.shift(); }
+      describe(sats, heard.length);
     }
     drawStreet(sats, hL, hR);
     drawMap();
   }
 
-  function describe(sats) {
+  function describe(sats, nHeard) {
     const n = (k) => sats.filter((m) => m.kind === k).length;
     $('nDirect').textContent = n('direct');
     $('nBounce').textContent = n('bounce');
     $('nBlocked').textContent = n('blocked');
-    if (dotX === null) { $('cityLive').innerHTML = 'Too few signals to work anything out yet.'; return; }
+    if (!fixed) {
+      const why = `<b>No fix.</b> The phone hears ${nHeard} satellite${nHeard === 1 ? '' : 's'} and needs ${need}.`;
+      setHTML($('cityLive'), dotX === null ? why : `${why} The faded dot is its last answer.`);
+      return;
+    }
     const off = dotX - px;
     const inside = dotX < 0 || dotX > W;
-    $('cityLive').innerHTML = Math.abs(off) < 1
+    setHTML($('cityLive'), Math.abs(off) < 1
       ? 'The blue dot is <b>right where you are</b>.'
-      : `The blue dot is <b>${fmtDist(off)} to your ${off < 0 ? 'left' : 'right'}</b>${inside ? ', <b>inside a building</b>' : ''}.`;
+      : `The blue dot is <b>${fmtDist(off)} to your ${off < 0 ? 'left' : 'right'}</b>${inside ? ', <b>inside a building</b>' : ''}.`);
   }
 
   // Side view: buildings, you, and each satellite's signal.
@@ -189,7 +199,11 @@ export function init(root) {
     const [yx] = v.px([px, 0]);
     ring(g, yx, row, 12); g.strokeStyle = P.text; g.lineWidth = 2; g.setLineDash([3, 3]); g.stroke(); g.setLineDash([]);
     label(g, 'you', yx, row + 26, { size: 12 });
-    if (dotX !== null) blueDot(g, Math.max(10, Math.min(w - 10, v.px([dotX, 0])[0])), row, 8);
+    if (dotX !== null) {
+      g.globalAlpha = fixed ? 1 : 0.35;
+      blueDot(g, Math.max(10, Math.min(w - 10, v.px([dotX, 0])[0])), row, 8);
+      g.globalAlpha = 1;
+    }
   }
 
   return loop(draw);

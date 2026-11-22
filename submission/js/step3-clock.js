@@ -6,7 +6,7 @@ import { fix } from './receiver.js';
 import { fitCanvas, ring, satellite, blueDot, grabRing, draggable, magnifier, loop } from './draw.js';
 import { palette as P } from './theme.js';
 import { spaceView, NAMES, middleOf, keepIn } from './space.js';
-import { fmtKm } from './ui.js';
+import { fmtKm, setHTML } from './ui.js';
 
 const FIND_TIME = 1.6;  // seconds the "let the phone find it" glide takes
 
@@ -88,11 +88,11 @@ export function init(root) {
 
     $('clockOut').textContent = `${(clockErr * 1000).toFixed(0)} ms fast`;
     $('shrinkOut').textContent = fmtKm(shrink);
-    $('clockLive').innerHTML = !useThird
+    setHTML($('clockLive'), !useThird
       ? 'With only A and B, <b>every</b> shrink amount gives a place where the rings cross. That’s the dotted trail. The phone has no way to choose, so it needs one more satellite.'
       : met
         ? `All three rings meet at a shrink of <b>${fmtKm(shrink)}</b>. That amount <b>is</b> the clock error: ${fmtKm(shrink)} ÷ 300,000 km/s = <b>${((shrink / C) * 1000).toFixed(0)} ms fast</b>.`
-        : `The three crossings (lime) don’t line up yet: they’re about <b>${fmtKm(gap)}</b> from meeting. Only one shrink amount makes them meet.`;
+        : `The three crossings (lime) don’t line up yet: they’re about <b>${fmtKm(gap)}</b> from meeting. Only one shrink amount makes them meet.`);
   }
 
   findBtn.addEventListener('click', () => {

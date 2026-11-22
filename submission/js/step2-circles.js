@@ -4,7 +4,7 @@ import { fix } from './receiver.js';
 import { fitCanvas, ring, label, satellite, blueDot, person, grabRing, draggable, loop } from './draw.js';
 import { palette as P } from './theme.js';
 import { spaceView, START_SATS, NAMES, middleOf, keepIn } from './space.js';
-import { fmtKm } from './ui.js';
+import { fmtKm, setHTML } from './ui.js';
 
 export function init(root) {
   const $ = (id) => root.querySelector(`#${id}`);
@@ -53,7 +53,7 @@ export function init(root) {
     if (solved.ok) blueDot(g, ...v.px(solved.pos), 9);
     else { g.globalAlpha = 0.6; person(g, Y[0], Y[1] + 12, 1.1); g.globalAlpha = 1; }
     grabRing(g, Y[0], Y[1], 22);
-    $('circlesLive').innerHTML = SAYS[heard.length];
+    setHTML($('circlesLive'), SAYS[heard.length]);
   }
   return loop(draw);
 }

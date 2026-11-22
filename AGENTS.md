@@ -9,6 +9,7 @@ An interactive explainer of how GPS works, in five steps (timing, circles, clock
   - `js/app.js`: entry point. `step1-timing.js` through `step5-city.js`: one module per step.
   - `js/receiver.js`: Gauss–Newton solver `fix()` and `spread()` (dilution of precision).
   - `js/space.js`, `geo.js`, `draw.js`, `ui.js`, `theme.js`: shared map, geometry, drawing, UI and theme helpers.
+- `tests/receiver.test.mjs`: tests for the receiver and step 5, on Node's built-in runner. Run `node --test` from the repo root.
 - `links.js` (repo root): the repo and live-site URLs the pages link to.
 - `submission/README.md`: detailed design notes, how it works, and what was simplified.
 

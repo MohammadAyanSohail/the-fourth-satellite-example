@@ -5,7 +5,7 @@ import { fix, spread } from './receiver.js';
 import { fitCanvas, ring, satellite, blueDot, grabRing, draggable, loop } from './draw.js';
 import { palette as P } from './theme.js';
 import { spaceView, START_SATS, NAMES, middleOf, keepIn } from './space.js';
-import { fmtKm } from './ui.js';
+import { fmtKm, setHTML } from './ui.js';
 
 const WOBBLE = 750e3;  // metres. Real measurements wobble by a metre or two; this is ~500,000× more, so you can see it.
 const GUESSES = 120;   // how many past answers to show as faint dots
@@ -60,9 +60,9 @@ export function init(root) {
 
     $('wobbleSize').textContent = Number.isFinite(size) ? `±${fmtKm(size)}` : 'can’t tell';
     $('wobbleMeter').style.width = `${Math.min(100, (size / 6e6) * 100)}%`;
-    $('wobbleLive').innerHTML = size < 1.8e6
+    setHTML($('wobbleLive'), size < 1.8e6
       ? 'The satellites are <b>spread around you</b>, so their rings cross at wide angles. Small errors only nudge the dot.'
-      : 'The satellites are <b>bunched together</b>, so their rings cross at shallow angles. The same small errors now slide the dot a long way.';
+      : 'The satellites are <b>bunched together</b>, so their rings cross at shallow angles. The same small errors now slide the dot a long way.');
   }
   return loop(draw);
 }

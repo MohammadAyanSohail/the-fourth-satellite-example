@@ -2,7 +2,7 @@
 import { C, EARTH_R, ORBIT_R } from './geo.js';
 import { fitCanvas, ring, label, satellite, person, loop } from './draw.js';
 import { palette as P } from './theme.js';
-import { fmtKm } from './ui.js';
+import { fmtKm, setHTML } from './ui.js';
 
 const SLOW = 30;    // the message is shown 30 times slower than real life, or it would be a blur
 const PAUSE = 1.6;  // seconds to keep the result on screen before the next message
@@ -55,9 +55,9 @@ export function init(root) {
     const ms = Math.min(elapsed, took) * 1000;
     $('watch').textContent = `${ms.toFixed(1)} ms`;
     $('watch').classList.toggle('done', f >= 1);
-    $('sum').innerHTML = f >= 1
+    setHTML($('sum'), f >= 1
       ? `<b>${(took * 1000).toFixed(1)} ms</b> × 300,000 km a second = <b>${fmtKm(d)}</b> away`
-      : 'The message is on its way…';
+      : 'The message is on its way…');
     $('elevOut').textContent = elev > 75 ? 'right overhead' : elev < 15 ? 'near the horizon' : `${elev}° up`;
   }
   return loop(draw);

@@ -40,7 +40,7 @@ In step 3 the visitor chooses how much to shrink every ring. For that amount, `f
 
 The pale circle in step 4 comes from `spread()`, which inverts the same matrix the solver uses. That shows how much the answer moves for each metre of error in a distance (GPS engineers call this dilution of precision). The circle's radius is the square root of the x and y variances added together, the measure phones themselves use.
 
-In step 5 the satellites are so far away that their signals arrive as parallel lines. `signalPath()` in `js/step5-city.js` checks whether each signal clears the roof on its side. If it doesn't, it checks for one bounce off the glass opposite, which adds `2 × (your distance from that wall) × cos(elevation)` metres. Anything else is blocked. With the 3D city map on, `mapCheck()` tries every spot across the street, predicts each signal's delay from there (bounces included), and keeps the spot that fits best.
+In step 5 the satellites are so far away that their signals arrive as parallel lines. `signalPath()` in `js/step5-city.js` checks whether each signal clears the roof on its side. If it doesn't, it checks for one bounce off the glass opposite, which adds `2 × (your distance from that wall) × cos(elevation)` metres. Anything else is blocked. With the 3D city map on, `mapCheck()` tries every spot across the street, predicts each signal's delay from there (bounces included), and keeps the spot that fits best. If fewer signals get through than the phone needs (three for `fix()`, two for the map check), there is no fix: the caption says so and the map shows the last answer faded.
 
 ### What is computed and what is drawn by hand
 
@@ -62,10 +62,6 @@ Decoration: the orbiting satellites and the breathing dot at the top of the page
 
 Every step rests on "the signal took 69.6 ms", and that's the hard part. A GPS signal arrives weaker than the noise around it. The phone finds it by sliding a copy of the satellite's known pattern of 1,023 on-off chips against what the antenna picks up until they line up. Our times come from the true distance plus noise. A better version would let the visitor slide the pattern themselves and watch the match rise out of the noise.
 
-### There are no tests
-
-`fix()` is careful only to use positions and times, but nothing enforces that. A better version would test the receiver against known answers: the exact position when there's no noise, the clock error recovered to the nanosecond, a refusal when there are too few satellites, and the same answer from different first guesses.
-
 ### The fourth satellite is only counted, not shown
 
 Step 3 shows, in the flat picture, why the clock takes one extra satellite, and counts the unknowns for the real world (east–west, north–south, height and clock). But you never see the fourth satellite at work, because the picture is flat. A better version would add a small 3D view at the end.
@@ -73,7 +69,6 @@ Step 3 shows, in the flat picture, why the clock takes one extra satellite, and 
 ### Smaller problems
 
 - With the satellites bunched up in step 4, the cloud of answers is long and thin but the pale circle is round. Phones draw a circle too, but an ellipse would be more honest.
-- `mapCheck()` is exported only so we could test it from the command line.
 
 ## Things we didn't make ourselves
 
@@ -103,9 +98,17 @@ python3 -m http.server 8642
 
 Then open <http://localhost:8642/submission/>. Browsers won't load JavaScript modules from a file opened directly, which is why it needs a server.
 
+The receiver has tests in `tests/receiver.test.mjs`, using Node's built-in test runner (Node 20 or later). From the top of the repository, run:
+
+```bash
+node --test
+```
+
+They check the exact position and clock error with no noise, the refusal when there are too few satellites, the same answer from different first guesses, that `fix()` reads nothing but positions and times, that the pale circle matches the real scatter, and the step 5 bounce and map check.
+
 ## The code
 
-There are about 830 lines of JavaScript, with no libraries. Each step has its own file, so you can explain one step without reading the others.
+There are about 850 lines of JavaScript, with no libraries. Each step has its own file, so you can explain one step without reading the others.
 
 | File | What's in it |
 |---|---|

@@ -15,3 +15,12 @@ export const fmtDist = (m) => {
   if (a < 1000) return `${a < 10 ? a.toFixed(1) : Math.round(a)} m`;
   return fmtKm(a);
 };
+
+// Changes an element's HTML only when it's different. The steps redraw every frame, and
+// rewriting a live caption 60 times a second would keep screen readers talking.
+const shown = new WeakMap();
+export function setHTML(el, html) {
+  if (shown.get(el) === html) return;
+  shown.set(el, html);
+  el.innerHTML = html;
+}
