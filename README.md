@@ -6,7 +6,7 @@ The project lives in [`submission/`](submission/), and its own README has the fu
 
 ## Live project
 
-<https://cishackathon.github.io/exemplar/submission/>
+<https://mohammadayansohail.github.io/the-fourth-satellite-example/submission/>
 
 ## Credits
 
