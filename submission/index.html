@@ -129,31 +129,45 @@
     <span class="step-num">3</span>
     <div>
       <h2>Your phone&rsquo;s clock is the problem</h2>
-      <p class="big-idea">Radio is so fast that a clock one millionth of a second out puts you 300 m wrong. A phone&rsquo;s clock is far worse than that.</p>
+      <p class="big-idea">Radio is so fast that a clock one millionth of a second out puts you 300 m wrong. A phone&rsquo;s clock is far worse, so every ring comes out <em>too big by the same amount</em>.</p>
     </div>
   </header>
   <div class="step-body">
     <div class="stage">
-      <canvas id="clockCanvas" class="grab" role="img" aria-label="Three rings that are all too big because the phone's clock is fast, and the phone's wrong guess"></canvas>
-      <div class="controls">
+      <canvas id="clockCanvas" class="grab" role="img" aria-label="Rings that are all too big because the phone's clock is fast. Shrink them together until they meet."></canvas>
+      <div class="controls stacked">
         <label class="slider">Phone&rsquo;s clock is
-          <input type="range" id="clockError" min="0" max="20" value="10">
+          <input type="range" id="clockError" min="1" max="20" value="10">
           <output id="clockOut"></output>
         </label>
-        <button type="button" class="btn" id="fixClock">Let the phone fix its clock</button>
+        <label class="slider strong">Shrink every ring by
+          <input type="range" id="shrink" min="0" max="8000" step="10" value="0">
+          <output id="shrinkOut"></output>
+        </label>
+        <div class="row">
+          <button type="button" class="chip" id="useThird" aria-pressed="true">Satellite C</button>
+          <button type="button" class="btn" id="findClock">Let the phone find it</button>
+        </div>
       </div>
       <p class="live" id="clockLive" aria-live="polite"></p>
     </div>
     <aside class="side">
       <div class="analogy">
         <p class="analogy-tag">Think of it like&hellip;</p>
-        <p><b>A watch that&rsquo;s 5 minutes fast.</b> Every time you check it, you&rsquo;re out by the same 5 minutes. Once you know that, you just take 5 minutes off every answer.</p>
+        <p><b>A watch that&rsquo;s 5 minutes fast.</b> Every time you check it, you&rsquo;re out by the same 5 minutes. Find that 5 minutes once and you can fix every answer.</p>
       </div>
       <ul class="try">
-        <li>Make the clock fast. Every ring grows by the same amount, and they stop meeting.</li>
-        <li>Press <b>Let the phone fix its clock</b>. All the rings shrink together until they meet in one spot.</li>
+        <li>Drag <b>Shrink every ring</b> until all three rings meet in one spot. The amount you shrank them by is the clock error.</li>
+        <li>Turn off <b>Satellite C</b>. Now every shrink amount gives a crossing, so there&rsquo;s no way to choose.</li>
       </ul>
-      <p class="note">That&rsquo;s why a real phone needs <b>4 satellites</b>, not 3: one extra to work out the clock.</p>
+      <div class="unknowns">
+        <p class="analogy-tag">Why one more satellite?</p>
+        <p>Count what the phone doesn&rsquo;t know. Each satellite gives it one clue, and it needs one clue per unknown.</p>
+        <div class="count"><span>left&ndash;right</span><span>up&ndash;down</span><span class="c">clock</span><b>3 unknowns &rarr; 3 satellites</b></div>
+        <p class="where">In this flat picture</p>
+        <div class="count"><span>east&ndash;west</span><span>north&ndash;south</span><span>height</span><span class="c">clock</span><b>4 unknowns &rarr; 4 satellites</b></div>
+        <p class="where">In the real, round world</p>
+      </div>
     </aside>
   </div>
 </section>
@@ -247,7 +261,7 @@
   <ol class="recap-list">
     <li><span>1</span>Satellites shout the time. Your phone times how late it arrives.</li>
     <li><span>2</span>Each delay is a distance, and each distance is a ring.</li>
-    <li><span>3</span>The rings meet where you are, once the phone has fixed its own clock.</li>
+    <li><span>3</span>A wrong clock makes every ring too big. One extra satellite lets the phone find out by how much.</li>
     <li><span>4</span>Satellites spread across the sky give a small pale circle.</li>
     <li><span>5</span>Buildings bounce signals, which is why the dot wanders in cities.</li>
   </ol>

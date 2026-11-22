@@ -118,14 +118,30 @@ export function init(root) {
     const ground = v.px([0, 0])[1];
 
     g.fillStyle = P.ground; g.fillRect(0, ground, w, h - ground);
-    for (const [x0, x1, bh] of [[-80, 0, hL], [W, W + 80, hR]]) {
-      const [ax, ay] = v.px([x0, bh]), [bx] = v.px([x1, 0]);
-      g.fillStyle = P.building; g.fillRect(ax, ay, bx - ax, ground - ay);
+    // Each building runs from its street-facing wall out past the edge of the picture.
+    // `out` is the direction away from the street: -1 for the left building, +1 for the right.
+    for (const [wall, out, bh] of [[0, -1, hL], [W, 1, hR]]) {
+      const [wx] = v.px([wall, 0]), [, roofY] = v.px([0, bh]);
+      const farX = out < 0 ? 0 : w;
+      g.fillStyle = P.building;
+      g.fillRect(Math.min(wx, farX), roofY, Math.abs(farX - wx), ground - roofY);
+
+      // Windows: one row per 4 m floor, only for floors that fit under the roof,
+      // in columns every 3 m going away from the street.
       g.fillStyle = P.line;
-      for (let fy = 4; fy < bh - 1; fy += 4) for (let fx = x0 + 2; fx < x1 - 1; fx += 4) {
-        const [wx, wy] = v.px([fx, fy]); g.fillRect(wx, wy - 3 / mpp, 2 / mpp, 2 / mpp);
+      for (let floor = 0; floor + 4 <= bh; floor += 4) {
+        for (let col = 1; col < 80; col += 3) {
+          const [x1, y1] = v.px([wall + out * col, floor + 3]);
+          const [x2, y2] = v.px([wall + out * (col + 1.6), floor + 1]);
+          if (Math.min(x1, x2) > w || Math.max(x1, x2) < 0) break;
+          g.fillRect(Math.min(x1, x2), y1, Math.abs(x2 - x1), y2 - y1);
+        }
       }
-      label(g, `${Math.round(bh)} m`, (ax + bx) / 2 + (x0 < 0 ? 30 : -30), ay - 12, { size: 12, color: P.muted });
+
+      // The height, written just above the roof at the street end, where it always fits.
+      g.strokeStyle = P.text; g.lineWidth = 2;
+      g.beginPath(); g.moveTo(wx, roofY); g.lineTo(wx + out * 40, roofY); g.stroke();
+      label(g, `${Math.round(bh)} m tall`, wx + out * 6, roofY - 12, { size: 13, align: out < 0 ? 'right' : 'left' });
     }
 
     const you = v.px([px, HAND]);

@@ -151,6 +151,20 @@ canvas.grabbing { cursor: grabbing; }
 #timingCanvas { height: 320px; }
 
 .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 14px; }
+.controls.stacked { flex-direction: column; align-items: stretch; }
+.controls.stacked .slider { justify-content: space-between; }
+.controls.stacked .slider input { flex: 1; min-width: 120px; }
+.controls .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.slider.strong { color: var(--text); font-weight: 600; }
+.slider.strong input { accent-color: var(--accent); }
+.unknowns { padding: 18px 20px; border-radius: 20px; border: 1px dashed var(--violet); }
+.unknowns p { margin: 0 0 10px; font-size: 15.5px; }
+.count { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.count span { font: 600 12.5px/1 "JetBrains Mono", monospace; padding: 6px 8px; border-radius: 8px; background: var(--blue-soft); color: var(--text); }
+.count span.c { background: var(--accent); color: #101400; }
+.count b { font-size: 14.5px; margin-left: 4px; }
+.unknowns .where { font-size: 13px; color: var(--muted); margin: 6px 0 14px; }
+.unknowns .where:last-child { margin-bottom: 0; }
 .controls-label { color: var(--muted); font-size: 15px; }
 .slider { display: flex; align-items: center; gap: 10px; font-size: 15px; color: var(--muted); flex-wrap: wrap; }
 .slider input { accent-color: var(--blue); width: 150px; }

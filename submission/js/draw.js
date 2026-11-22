@@ -58,6 +58,19 @@ export function person(g, x, y, s = 1) {
   g.restore();
 }
 
+// A round magnifying glass at (x, y) on the canvas, radius R pixels, showing the world around
+// `center` `zoom` times closer. drawInside(view) draws the scene again with the zoomed View.
+export function magnifier(g, v, center, zoom, x, y, R, drawInside) {
+  const zv = new View(R * 2, R * 2, center, v.mpp / zoom);
+  g.save();
+  ring(g, x, y, R); g.fillStyle = P.card; g.fill(); g.clip();
+  g.translate(x - R, y - R);
+  drawInside(zv);
+  g.restore();
+  ring(g, x, y, R); g.strokeStyle = P.accent; g.lineWidth = 2; g.stroke();
+  label(g, `${zoom}× closer`, x, y + R + 14, { size: 12, color: P.muted, weight: 500 });
+}
+
 // A dashed ring in the accent colour that says "you can drag this".
 export function grabRing(g, x, y, r = 16) {
   g.setLineDash([4, 4]); g.strokeStyle = P.accent; g.lineWidth = 2;

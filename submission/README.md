@@ -10,7 +10,7 @@ Most people think a satellite tells their phone where they are. It doesn't. No s
 |---|---|---|---|
 | 1. Timing | A delay is a distance | Move a satellite from overhead to the horizon and watch its timed message travel down (slowed 30×), with a stopwatch | Counting between lightning and thunder |
 | 2. Circles | One distance is a ring; three rings meet in one spot | Switch satellites on one at a time, drag yourself around | A friend texting "I'm 5 km from the station" |
-| 3. Clock | The phone's clock is wrong, so every ring is too big by the same amount | Make the clock fast, see the phone's wrong guess, then press a button and watch the rings shrink together until they meet | A watch that's 5 minutes fast |
+| 3. Clock | The phone's clock is wrong, so every ring is too big by the same amount, and finding that amount takes one more satellite | Shrink every ring by the same amount yourself until they meet, with a 12× magnifier on the crossings. Turn off one satellite and every amount works, drawn as a trail of possible answers. A card counts the unknowns: 3 in the flat picture, 4 in the real world | A watch that's 5 minutes fast |
 | 4. Wobble | Where the satellites sit decides the size of the pale circle | Spread the satellites out or bunch them together, or drag them, and watch the cloud of answers | Two torch beams crossing |
 | 5. City | Buildings block and bounce signals, so the dot wanders | Change building height and where you stand, pause the sky, and turn on a 3D city map | A shout bouncing off a wall |
 
@@ -38,7 +38,7 @@ The receiver, `fix()` in `js/receiver.js`, works out x, y and the clock error wi
 4. Solve a small set of equations for the move that best shrinks all the differences at once, and take it.
 5. Repeat until the move is under a millimetre.
 
-Step 3 runs `fix()` twice: once trusting the clock (solving only x and y), which gives the phone's wrong guess, and once working out the clock too. The animation then shrinks every ring by the clock error that second answer found.
+In step 3 the visitor chooses how much to shrink every ring. For that amount, `fix()` (solving only x and y) finds the single best spot, and the page reports how far that spot still is from the worst ring. The rings meet only when the amount equals the clock error times the speed of light. With two satellites, the page instead draws where the two rings cross for every shrink amount, a whole trail of possible answers, and `fix()` with the clock unknown refuses, because two clues can't settle three unknowns. "Let the phone find it" glides the slider to the amount `fix()` finds when it solves for the clock itself.
 
 The pale circle in step 4 comes from `spread()`, which inverts the same matrix the solver uses. That shows how much the answer moves for each metre of error in a distance (GPS engineers call this dilution of precision). The circle's radius is the square root of the x and y variances added together, the measure phones themselves use.
 
@@ -68,9 +68,9 @@ Every step rests on "the signal took 69.6 ms", and that's the hard part. A GPS s
 
 `fix()` is careful only to use positions and times, but nothing enforces that. A winning entry would test the receiver against known answers: the exact position when there's no noise, the clock error recovered to the nanosecond, a refusal when there are too few satellites, and the same answer from different first guesses.
 
-### The fourth satellite is only described
+### The fourth satellite is only counted, not shown
 
-Step 3 tells you a real phone needs four satellites, but you never see why, because the picture is flat. A winning entry would add a small 3D view at the end.
+Step 3 shows, in the flat picture, why the clock takes one extra satellite, and counts the unknowns for the real world (east–west, north–south, height and clock). But you never see the fourth satellite at work, because the picture is flat. A winning entry would add a small 3D view at the end.
 
 ### Smaller problems
 
