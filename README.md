@@ -1,20 +1,17 @@
-# Example submission: Nobody up there knows where you are
+# The Fourth Satellite
 
-This repository is the example submission for the Global Virtual Hackathon 2026. The organisers made it to show the kind of complete entry we hope to see, and it isn't competing.
+Most people think a satellite tells their phone where they are. It doesn't. No satellite knows you exist. Satellites only broadcast who they are, where they are and what time it is, and your phone works out the blue dot itself by timing each message. This project explains how GPS works in five short interactive steps: timing, circles, the clock, wobble and city. Along the way it shows why the phone needs a fourth satellite to fix its own clock.
 
-`index.html` shows the submission the way it appears in the team portal once a team has submitted, with every field of the form filled in.
-
-`submission/` is the project itself: the working site, its code, and its README, which is the project page. Start there if you want to see how it works.
-
-`links.js` holds the two addresses both pages link to, the repository and the live site.
+The project lives in [`submission/`](submission/), and its own README has the full details.
 
 ## Live project
 
-See the example submission page here: <https://cishackathon.github.io/exemplar/>
+<https://cishackathon.github.io/exemplar/submission/>
 
-See the project here: <https://cishackathon.github.io/exemplar/submission/>
+## Credits
 
+This project started from the organisers' exemplar submission for the Global Virtual Hackathon 2026 (MIT licence; see LICENSE). We kept its project structure and coding style, and its full commit history is preserved in this repository.
 
-## Licence
+## License
 
-The code and text are under the MIT licence (see `LICENSE`). The fonts have their own licences, listed at the end of `submission/README.md`.
+Released under the MIT License. See [`LICENSE`](LICENSE). The fonts have their own licences, listed at the end of [`submission/README.md`](submission/README.md).
